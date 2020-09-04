@@ -6,7 +6,7 @@ import com.chess.engine.board.*;
 import com.chess.engine.player.*;
 
 public class Knight extends Piece{
-    private final int coordinateModifiers[] = {-21, -19, -12, -8, 8, 12, 19, 21};
+    private final int[] coordinateModifiers = {-21, -19, -12, -8, 8, 12, 19, 21};
 
     public Knight(int coordinate, Colour colour) {
         super(coordinate, colour);
@@ -17,12 +17,14 @@ public class Knight extends Piece{
     public String toString() {
         return colour == Colour.BLACK ? "n" : "N";
     }
+
     public ArrayList<Move> getPossibleMoves(Board board){
-        possibleMoves = new ArrayList<Move>();
-        int newCoordinate = 0;
+        possibleMoves = new ArrayList<>();
+        int newCoordinate;
         Square newSquare;
-        for(int i = 0; i < coordinateModifiers.length; ++i) {
-            newCoordinate = this.coordinate + coordinateModifiers[i];
+
+        for(int coordinateModifier : coordinateModifiers) {
+            newCoordinate = this.coordinate + coordinateModifier;
             newSquare = board.getSquare(newCoordinate);
             if(board.isValidSquare(newCoordinate)) {
                 if(newSquare.isOccupied()

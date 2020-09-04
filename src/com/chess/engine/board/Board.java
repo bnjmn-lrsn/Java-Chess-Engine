@@ -17,15 +17,15 @@ public class Board {
     public Board() {
         gameBoard = new Square[120];
         playerToMove = Colour.WHITE;
-        moveHistory = new ArrayList<Move>();
-        whitePieceSet = new ArrayList<Piece>();
-        blackPieceSet = new ArrayList<Piece>();
+        moveHistory = new ArrayList<>();
+        whitePieceSet = new ArrayList<>();
+        blackPieceSet = new ArrayList<>();
 
         for(int i = 0; i < gameBoard.length; ++i) {
             gameBoard[i] = new Square(65);
         }
 
-        int sq = 0;
+        int sq;
         for(int i = 0; i < 8; ++i) {
             for(int j = 0; j < 8; ++j) {
                 sq = (21 + j) + (i * 10);
@@ -59,7 +59,7 @@ public class Board {
         gameBoard[97].setPiece(new Knight(97, Colour.WHITE));
         whitePieceSet.add(gameBoard[97].getPiece());
         //Black Knights
-        gameBoard[22].setPiece(new Knight(22, Colour.BLACK));
+        gameBoard[22].setPiece(new Knight(22, Colour.BLACK));//22
         blackPieceSet.add(gameBoard[22].getPiece());
         gameBoard[27].setPiece(new Knight(27, Colour.BLACK));
         blackPieceSet.add(gameBoard[27].getPiece());

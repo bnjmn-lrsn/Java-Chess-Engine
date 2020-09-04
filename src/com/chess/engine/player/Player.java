@@ -9,19 +9,19 @@ public class Player {
     private ArrayList<Piece> capturedMaterial;
     private ArrayList<Move> allPossibleMoves;
     private final Colour myColour;
-    private Piece king;
+    private final Piece king;
     private boolean kingSafe;
 
     public Player(Colour myColour, Board board) {
         this.myColour = myColour;
-        materialInPlay = new ArrayList<Piece>();
+        materialInPlay = new ArrayList<>();
         if(myColour == Colour.WHITE) {
             materialInPlay = board.getWhitePieceSet();
         }else {
             materialInPlay = board.getBlackPieceSet();
         }
         king = materialInPlay.get(materialInPlay.size() - 1);
-        capturedMaterial = new ArrayList<Piece>();
+        capturedMaterial = new ArrayList<>();
     }
 
     public Colour getPlayerColour() {
@@ -63,7 +63,7 @@ public class Player {
     }
 
     private boolean checkForDiagonalThreats(Board board) {
-        int diagonalModifiers[] = {-11, -9, 9, 11};
+        int[] diagonalModifiers = {-11, -9, 9, 11};
         int kingSquare = king.getCoordinate();
         int distanceModifier = 1;
         Square newSquare;
@@ -91,7 +91,7 @@ public class Player {
         return false;
     }
     private boolean checkForRankFileThreats(Board board) {
-        int rankFileModifiers[] = {-10, -1, 1, 10};
+        int[] rankFileModifiers = {-10, -1, 1, 10};
         int kingSquare = king.getCoordinate();
         int distanceModifier = 1;
         Square newSquare;
@@ -119,19 +119,38 @@ public class Player {
         return false;
     }
     private boolean checkForKnightThreats(Board board) {
-        int knightModifiers[] = {-21, -19, -12, -8, 8, 12, 19, 21};
-        return kingSafe;
+        int[] knightModifiers = {-21, -19, -12, -8, 8, 12, 19, 21};
+        int kingSquare = king.getCoordinate();
+        int newCoordinate;
+        Square newSquare;
+        Piece attackingPiece;
+
+        for(int modifier : knightModifiers) {
+            newCoordinate = kingSquare + modifier;
+            newSquare = board.getSquare(newCoordinate);
+            if(board.isValidSquare(newCoordinate) &&
+                    ((newSquare.isOccupied()) &&
+                            (newSquare.getPiece().getColour() != myColour))){
+                attackingPiece = newSquare.getPiece();
+                if(attackingPiece.getPieceType().equals("Knight")) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
     }
     private boolean checkForPawnThreats(Board board) {
         return kingSafe;
     }
     private boolean checkForOpposingKing(Board board) {
+        int[] kingModifiers = {-11, -10, -9, -1, 1, 9, 10, 11};
         return kingSafe;
     }
 
     public ArrayList<Move> generateAllPossibleMoves(Board board){
-        allPossibleMoves = new ArrayList<Move>();
-        ArrayList<Move> currentPieceMoves = new ArrayList<Move>();
+        allPossibleMoves = new ArrayList<>();
+        ArrayList<Move> currentPieceMoves;
         for(Piece piece : materialInPlay) {
             currentPieceMoves = piece.getPossibleMoves(board);
             for(Move move : currentPieceMoves) {

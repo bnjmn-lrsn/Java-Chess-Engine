@@ -7,7 +7,7 @@ import com.chess.engine.player.*;
 
 
 public class Queen extends Piece {
-    private final int coordinateModifiers[] = {-11, -10, -9, -1, 1, 9, 10, 11};
+    private final int[] coordinateModifiers = {-11, -10, -9, -1, 1, 9, 10, 11};
 
     public Queen(int coordinate, Colour colour) {
         super(coordinate, colour);
@@ -20,23 +20,23 @@ public class Queen extends Piece {
     }
 
     public ArrayList<Move> getPossibleMoves(Board board){
-        possibleMoves = new ArrayList<Move>();
+        possibleMoves = new ArrayList<>();
         int distanceModifier = 1;
-        int newCoordinate = 0;
+        int newCoordinate;
         Square newSquare;
-        for(int i = 0; i < coordinateModifiers.length; ++i) {
-            newCoordinate = this.coordinate + distanceModifier * coordinateModifiers[i];
+        for (int coordinateModifier : coordinateModifiers) {
+            newCoordinate = this.coordinate + distanceModifier * coordinateModifier;
             newSquare = board.getSquare(newCoordinate);
-            while(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))){
+            while (board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))) {
                 Move move = new Move.PieceMove(coordinate, newCoordinate, this);
                 possibleMoves.add(move);
                 distanceModifier++;
-                newCoordinate = this.coordinate +  distanceModifier * coordinateModifiers[i];
+                newCoordinate = this.coordinate + distanceModifier * coordinateModifier;
                 newSquare = board.getSquare(newCoordinate);
             }
-            if(board.isValidSquare(newCoordinate) &&
+            if (board.isValidSquare(newCoordinate) &&
                     ((newSquare.isOccupied()) &&
-                            (newSquare.getPiece().getColour() != colour))){
+                            (newSquare.getPiece().getColour() != colour))) {
                 Move move = new Move.Capture(this.coordinate, newCoordinate, this, newSquare.getPiece());
                 possibleMoves.add(move);
             }

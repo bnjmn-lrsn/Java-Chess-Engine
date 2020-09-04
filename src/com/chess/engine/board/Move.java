@@ -43,19 +43,20 @@ public abstract class Move {
         public boolean isCapture() {
             return false;
         }
+
         public Piece getCapturedPiece() {
             return null;
         }
+
         public String toString() {
-            String str = pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
+            return pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
                     + this.coordinateMovedFrom + " to " + this.coordinateMovedTo;
-            return str;
         }
     }
 
     public static final class Capture extends Move {
 
-        private Piece pieceCaptured;
+        private final Piece pieceCaptured;
 
         public Capture(int coordinateMovedFrom, int coordinateMovedTo,
                        Piece pieceMoved, Piece pieceCaptured) {
@@ -67,15 +68,16 @@ public abstract class Move {
         public boolean isCapture() {
             return true;
         }
+
         public Piece getCapturedPiece() {
             return pieceCaptured;
         }
+
         public String toString() {
-            String str = pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
+            return pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
                     + this.coordinateMovedFrom + " to " + this.coordinateMovedTo +
                     " and captured " + this.pieceCaptured.getColour()
                     + " " + this.pieceCaptured.getPieceType();
-            return str;
         }
 
     }
