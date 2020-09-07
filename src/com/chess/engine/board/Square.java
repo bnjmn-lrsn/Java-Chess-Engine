@@ -11,17 +11,15 @@ public class Square {
         this.coordinate = coordinate;
         occupied = false;
     }
-    public Square(int coordinate, Piece piece) {
-        this(coordinate);
-        this.piece = piece;
-        occupied = true;
-    }
+
     public void setCoordinate(int coordinate) {
         this.coordinate = coordinate;
     }
+
     public int getCoordinate() {
         return coordinate;
     }
+
     public void setPiece(Piece piece) {
         this.piece = piece;
         occupied = true;
@@ -33,21 +31,16 @@ public class Square {
             return null;
         }
     }
+
     public boolean isOccupied() {
         return occupied;
     }
+
     public void removePiece() {
         piece = null;
         occupied = false;
     }
 
-    public String toString() {
-        if(occupied) {
-            return "|" + piece + "|";
-        }
-        else {
-            return "| |";
-        }
-    }
+    public String toString() { return this.occupied ? "|" + this.piece + "|" : "| |"; }
 
 }

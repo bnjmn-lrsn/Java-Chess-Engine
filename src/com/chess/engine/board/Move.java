@@ -26,9 +26,11 @@ public abstract class Move {
     public int getCoordinateMovedFrom() {
         return coordinateMovedFrom;
     }
+
     public int getCoordinateMovedTo() {
         return coordinateMovedTo;
     }
+
     public Piece getPieceMoved() {
         return pieceMoved;
     }
@@ -50,7 +52,8 @@ public abstract class Move {
 
         public String toString() {
             return pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
-                    + this.coordinateMovedFrom + " to " + this.coordinateMovedTo;
+                    + Board.algebraicCoordinates.get(this.coordinateMovedFrom) + " to "
+                    + Board.algebraicCoordinates.get(this.coordinateMovedTo);
         }
     }
 
@@ -75,7 +78,8 @@ public abstract class Move {
 
         public String toString() {
             return pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
-                    + this.coordinateMovedFrom + " to " + this.coordinateMovedTo +
+                    + Board.algebraicCoordinates.get(this.coordinateMovedFrom) + " to "
+                    + Board.algebraicCoordinates.get(this.coordinateMovedTo) +
                     " and captured " + this.pieceCaptured.getColour()
                     + " " + this.pieceCaptured.getPieceType();
         }

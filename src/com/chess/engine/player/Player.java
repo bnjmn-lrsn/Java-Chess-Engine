@@ -10,7 +10,6 @@ public class Player {
     private ArrayList<Move> allPossibleMoves;
     private final Colour myColour;
     private final Piece king;
-    private boolean kingSafe;
 
     public Player(Colour myColour, Board board) {
         this.myColour = myColour;
@@ -37,10 +36,8 @@ public class Player {
     }
 
     public boolean kingIsSafe(Move move, Board board) {
-        //update the board with the new move
         makeMove(move, board);
 
-        //check for threats
         if(checkForDiagonalThreats(board)) {
             undoMove(move, board);
             return false;
@@ -141,11 +138,29 @@ public class Player {
         return false;
     }
     private boolean checkForPawnThreats(Board board) {
-        return kingSafe;
+        return false;
     }
+
     private boolean checkForOpposingKing(Board board) {
         int[] kingModifiers = {-11, -10, -9, -1, 1, 9, 10, 11};
-        return kingSafe;
+        int kingSquare = king.getCoordinate();
+        int newCoordinate;
+        Square newSquare;
+        Piece attackingPiece;
+
+        for(int modifier : kingModifiers){
+            newCoordinate = kingSquare + modifier;
+            newSquare = board.getSquare(newCoordinate);
+            if(board.isValidSquare(newCoordinate) &&
+                    ((newSquare.isOccupied()) &&
+                            (newSquare.getPiece().getColour() != myColour))) {
+                attackingPiece = newSquare.getPiece();
+                if (attackingPiece.getPieceType().equals("King")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public ArrayList<Move> generateAllPossibleMoves(Board board){

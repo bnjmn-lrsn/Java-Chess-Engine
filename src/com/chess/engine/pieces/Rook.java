@@ -19,6 +19,7 @@ public class Rook extends Piece {
     public String toString() {
         return colour == Colour.BLACK ? "r" : "R";
     }
+
     public ArrayList<Move> getPossibleMoves(Board board){
         possibleMoves = new ArrayList<>();
         int distanceModifier = 1;
