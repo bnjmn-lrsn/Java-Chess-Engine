@@ -7,9 +7,6 @@ import com.chess.engine.player.*;
 
 public class Pawn extends Piece {
 
-    private static int[] whiteCoordinateModifiers = {-20, -11, -10, -9};
-    private static int[] blackCoordinateModifiers = {20, 11, 10, 9};
-
     public Pawn(int coordinate, Colour colour) {
         super(coordinate, colour);
         this.materialValue = 100;
@@ -22,8 +19,8 @@ public class Pawn extends Piece {
 
     @Override
     public ArrayList<Move> getPossibleMoves(Board board) {
-        possibleMoves = new ArrayList<Move>();
-        int newCoordinate = 0;
+        possibleMoves = new ArrayList<>();
+        int newCoordinate;
         if(colour == Colour.WHITE) {
             if(coordinate >= 81) {
                 newCoordinate = coordinate - 20;

@@ -15,18 +15,19 @@ public abstract class Piece {
     public Piece(int coordinate, Colour colour) {
         this.coordinate = coordinate;
         this.colour = colour;
-        possibleMoves = new ArrayList<Move>();
+        possibleMoves = new ArrayList<>();
         materialValue = 0;
     }
+
     public Piece(int coordinate, Colour colour, int value) {
         this(coordinate, colour);
         materialValue = value;
     }
+
     public Piece(int coordinate, Colour colour, int value, String pieceType) {
         this(coordinate, colour, value);
         this.pieceType = pieceType;
     }
-
 
     public void setCoordinate(int coordinate) {
         this.coordinate = coordinate;
