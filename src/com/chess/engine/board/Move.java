@@ -41,11 +41,13 @@ public abstract class Move {
                          Piece pieceMoved) {
             super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
         }
+
         @Override
         public boolean isCapture() {
             return false;
         }
 
+        @Override
         public Piece getCapturedPiece() {
             return null;
         }
@@ -65,24 +67,75 @@ public abstract class Move {
                        Piece pieceMoved, Piece pieceCaptured) {
             super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
             this.pieceCaptured = pieceCaptured;
-
         }
+
         @Override
         public boolean isCapture() {
             return true;
         }
 
+        @Override
         public Piece getCapturedPiece() {
             return pieceCaptured;
         }
 
         public String toString() {
-            return pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
+           return pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
                     + Board.algebraicCoordinates.get(this.coordinateMovedFrom) + " to "
                     + Board.algebraicCoordinates.get(this.coordinateMovedTo) +
                     " and captured " + this.pieceCaptured.getColour()
                     + " " + this.pieceCaptured.getPieceType();
+
+            /*return pieceMoved.getPieceType().equals("Pawn") ?
+                    Board.algebraicCoordinates.get(this.coordinateMovedFrom) + " "
+                    + Board.algebraicCoordinates.get(this.coordinateMovedTo) :
+                    pieceMoved + Board.algebraicCoordinates.get(this.coordinateMovedFrom) + " "
+                    + pieceMoved + Board.algebraicCoordinates.get(this.coordinateMovedTo);*/
         }
 
+    }
+
+    public static final class Promotion extends Move {
+
+        Piece piecePromotedTo;
+
+        public Promotion(int coordinateMovedFrom, int coordinateMovedTo,
+                         Piece pieceMoved, Piece piecePromotedTo) {
+            super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
+            this.piecePromotedTo = piecePromotedTo;
+        }
+
+        @Override
+        public boolean isCapture() { return false; }
+
+        @Override
+        public Piece getCapturedPiece() { return null; }
+
+        public String toString(){
+            return "";
+        }
+    }
+
+    public static final class PromotionWithCapture extends Move {
+
+        Piece pieceCaptured;
+        Piece piecePromotedTo;
+
+        public PromotionWithCapture(int coordinateMovedFrom, int coordinateMovedTo,
+                                    Piece pieceMoved, Piece pieceCaptured, Piece piecePromotedTo) {
+            super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
+            this.pieceCaptured = pieceCaptured;
+            this.piecePromotedTo = piecePromotedTo;
+        }
+
+        @Override
+        public boolean isCapture() { return true; }
+
+        @Override
+        public Piece getCapturedPiece() { return pieceCaptured; }
+
+        public String toString(){
+            return "";
+        }
     }
 }
