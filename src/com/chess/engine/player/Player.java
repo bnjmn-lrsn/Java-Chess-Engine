@@ -1,4 +1,5 @@
 package com.chess.engine.player;
+
 import java.util.ArrayList;
 
 import com.chess.engine.pieces.*;
@@ -6,21 +7,18 @@ import com.chess.engine.board.*;
 
 public class Player {
     private ArrayList<Piece> materialInPlay;
-    private ArrayList<Piece> capturedMaterial;
     private ArrayList<Move> allPossibleMoves;
     private final Colour myColour;
     private final Piece king;
+    private final int[] diagonalModifiers = {-11, -9, 9, 11};
+    private final int[] rankFileModifiers = {-10, -1, 1, 10};
+    private final int[] knightModifiers = {-21, -19, -12, -8, 8, 12, 19, 21};
+    private final int[] kingModifiers = {-11, -10, -9, -1, 1, 9, 10, 11};
 
     public Player(Colour myColour, Board board) {
         this.myColour = myColour;
-        materialInPlay = new ArrayList<>();
-        if(myColour == Colour.WHITE) {
-            materialInPlay = board.getWhitePieceSet();
-        }else {
-            materialInPlay = board.getBlackPieceSet();
-        }
+        materialInPlay = board.getPieceSet(myColour);
         king = materialInPlay.get(materialInPlay.size() - 1);
-        capturedMaterial = new ArrayList<>();
     }
 
     public Colour getPlayerColour() {
@@ -29,10 +27,6 @@ public class Player {
 
     public ArrayList<Piece> getMaterialInPlay(){
         return materialInPlay;
-    }
-
-    public void setMaterialInPlay(ArrayList<Piece> material) {
-        materialInPlay = material;
     }
 
     public boolean kingIsSafe(Move move, Board board) {
@@ -60,107 +54,88 @@ public class Player {
     }
 
     private boolean checkForDiagonalThreats(Board board) {
-        int[] diagonalModifiers = {-11, -9, 9, 11};
-        int kingSquare = king.getCoordinate();
-        int distanceModifier = 1;
-        Square newSquare;
-        int newCoordinate;
-        Piece attackingPiece;
-
-        for(int modifier : diagonalModifiers) {
-            newCoordinate = kingSquare + distanceModifier * modifier;
-            newSquare = board.getSquare(newCoordinate);
-            while(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))) {
-                distanceModifier++;
-                newCoordinate = kingSquare + distanceModifier * modifier;
-                newSquare = board.getSquare(newCoordinate);
+        for(int modifier : diagonalModifiers){
+            if(checkForDistantThreat(board, modifier, "Bishop") || checkForDistantThreat(board, modifier, "Queen")){
+                return true;
             }
-            if(board.isValidSquare(newCoordinate) &&
-                    ((newSquare.isOccupied()) &&
-                            (newSquare.getPiece().getColour() != myColour))){
-                attackingPiece = newSquare.getPiece();
-                if(attackingPiece.getPieceType().equals("Bishop") || attackingPiece.getPieceType().equals("Queen")) {
-                    return true;
-                }
-            }
-            distanceModifier = 1;
         }
         return false;
     }
+
     private boolean checkForRankFileThreats(Board board) {
-        int[] rankFileModifiers = {-10, -1, 1, 10};
-        int kingSquare = king.getCoordinate();
-        int distanceModifier = 1;
-        Square newSquare;
-        int newCoordinate;
-        Piece attackingPiece;
-
-        for(int modifier : rankFileModifiers) {
-            newCoordinate = kingSquare + distanceModifier * modifier;
-            newSquare = board.getSquare(newCoordinate);
-            while(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))) {
-                distanceModifier++;
-                newCoordinate = kingSquare + distanceModifier * modifier;
-                newSquare = board.getSquare(newCoordinate);
+        for(int modifier : rankFileModifiers){
+            if(checkForDistantThreat(board, modifier, "Rook") || checkForDistantThreat(board, modifier, "Queen")){
+                return true;
             }
-            if(board.isValidSquare(newCoordinate) &&
-                    ((newSquare.isOccupied()) &&
-                            (newSquare.getPiece().getColour() != myColour))){
-                attackingPiece = newSquare.getPiece();
-                if(attackingPiece.getPieceType().equals("Rook") || attackingPiece.getPieceType().equals("Queen")) {
-                    return true;
-                }
-            }
-            distanceModifier = 1;
         }
         return false;
     }
+
     private boolean checkForKnightThreats(Board board) {
-        int[] knightModifiers = {-21, -19, -12, -8, 8, 12, 19, 21};
-        int kingSquare = king.getCoordinate();
-        int newCoordinate;
-        Square newSquare;
-        Piece attackingPiece;
-
-        for(int modifier : knightModifiers) {
-            newCoordinate = kingSquare + modifier;
-            newSquare = board.getSquare(newCoordinate);
-            if(board.isValidSquare(newCoordinate) &&
-                    ((newSquare.isOccupied()) &&
-                            (newSquare.getPiece().getColour() != myColour))){
-                attackingPiece = newSquare.getPiece();
-                if(attackingPiece.getPieceType().equals("Knight")) {
-                    return true;
-                }
+        for(int modifier : knightModifiers){
+            if(checkForThreat(board, modifier, "Knight")){
+                return true;
             }
-
         }
         return false;
     }
+
     private boolean checkForPawnThreats(Board board) {
+        if(myColour == Colour.WHITE){
+            if(checkForThreat(board, -11, "Pawn")){
+                return true;
+            }
+            else return checkForThreat(board, -9, "Pawn");
+        }
+        else if(myColour == Colour.BLACK){
+            if(checkForThreat(board, 11, "Pawn")){
+                return true;
+            }
+            else return checkForThreat(board, 9, "Pawn");
+        }
         return false;
     }
 
     private boolean checkForOpposingKing(Board board) {
-        int[] kingModifiers = {-11, -10, -9, -1, 1, 9, 10, 11};
+        for(int modifier : kingModifiers) {
+            if(checkForThreat(board, modifier, "King")){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkForThreat(Board board, int modifier, String pieceType){
         int kingSquare = king.getCoordinate();
         int newCoordinate;
         Square newSquare;
         Piece attackingPiece;
 
-        for(int modifier : kingModifiers){
-            newCoordinate = kingSquare + modifier;
+        newCoordinate = kingSquare + modifier;
+        if(board.isValidSquare(newCoordinate)){
             newSquare = board.getSquare(newCoordinate);
-            if(board.isValidSquare(newCoordinate) &&
-                    ((newSquare.isOccupied()) &&
-                            (newSquare.getPiece().getColour() != myColour))) {
+            if(newSquare.isOccupied() && newSquare.getPiece().getColour() != myColour){
                 attackingPiece = newSquare.getPiece();
-                if (attackingPiece.getPieceType().equals("King")) {
-                    return true;
-                }
+                return attackingPiece.getPieceType().equals(pieceType);
             }
         }
         return false;
+    }
+
+    private boolean checkForDistantThreat(Board board, int modifier, String pieceType){
+        int distanceModifier = 1;
+        int kingSquare = king.getCoordinate();
+        int newCoordinate;
+        Square newSquare;
+
+        newCoordinate = kingSquare + distanceModifier * modifier;
+        newSquare = board.getSquare(newCoordinate);
+        while(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))) {
+            distanceModifier++;
+            newCoordinate = kingSquare + distanceModifier * modifier;
+            newSquare = board.getSquare(newCoordinate);
+        }
+        return checkForThreat(board, distanceModifier * modifier, pieceType);
     }
 
     public ArrayList<Move> generateAllPossibleMoves(Board board){
@@ -184,16 +159,9 @@ public class Player {
         Square squareMovedFrom = board.getSquare(coordinateMovedFrom);
         Piece pieceMoved = move.getPieceMoved();
 
-        if(move.isCapture()){
-            //Piece oldPiece = squareMovedTo.getPiece();
-            squareMovedTo.setPiece(pieceMoved);
-            pieceMoved.setCoordinate(coordinateMovedTo);
-            squareMovedFrom.removePiece();
-        }else {
-            squareMovedTo.setPiece(pieceMoved);
-            pieceMoved.setCoordinate(coordinateMovedTo);
-            squareMovedFrom.removePiece();
-        }
+        squareMovedTo.setPiece(pieceMoved);
+        pieceMoved.setCoordinate(coordinateMovedTo);
+        squareMovedFrom.removePiece();
     }
 
     public void undoMove(Move move, Board board) {
