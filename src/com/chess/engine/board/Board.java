@@ -7,15 +7,14 @@ import com.chess.engine.pieces.*;
 import com.chess.engine.player.*;
 
 public final class Board {
-    private static Square[] gameBoard;
-    private static Colour playerToMove;
-    private static ArrayList<Move> moveHistory;
-    private static ArrayList<Piece> whitePieceSet;
-    private static ArrayList<Piece> blackPieceSet;
+    private Square[] gameBoard;
+    private Colour playerToMove;
+    private ArrayList<Move> moveHistory;
+    private ArrayList<Piece> whitePieceSet;
+    private ArrayList<Piece> blackPieceSet;
     private static final String[] fileDesignators = {"a", "b", "c", "d", "e", "f", "g", "h"};
 
     public final static HashMap<Integer, String> algebraicCoordinates = initAlgebraicCoordinates();
-
 
     public Board() {
         playerToMove = Colour.WHITE;
@@ -26,7 +25,7 @@ public final class Board {
         initBlackPieces();
     }
 
-    private void initBoardSquares(){
+    private void initBoardSquares() {
         gameBoard = new Square[120];
 
         for(int i = 0; i < gameBoard.length; ++i) {
@@ -43,7 +42,7 @@ public final class Board {
         }
     }
 
-    private void initWhitePieces(){
+    private void initWhitePieces() {
         whitePieceSet = new ArrayList<>();
         //White Pawns
         for(int i = 81; i < 89; ++i) {
@@ -74,7 +73,7 @@ public final class Board {
 
     }
 
-    private void initBlackPieces(){
+    private void initBlackPieces() {
         blackPieceSet = new ArrayList<>();
         //Black Pawns
         for(int i = 31; i < 39; ++i) {
@@ -104,7 +103,7 @@ public final class Board {
         blackPieceSet.add(gameBoard[25].getPiece());
     }
 
-    private static HashMap<Integer, String> initAlgebraicCoordinates(){
+    private static HashMap<Integer, String> initAlgebraicCoordinates() {
         HashMap<Integer, String> hm = new HashMap<>();
         int rank, file, coordinate, reverseFile = 8;
         String algebraicCoordinate;
@@ -116,7 +115,6 @@ public final class Board {
             }
             reverseFile--;
         }
-
         return hm;
     }
 
@@ -134,6 +132,10 @@ public final class Board {
 
     public ArrayList<Piece> getBlackPieceSet(){
         return blackPieceSet;
+    }
+
+    public ArrayList<Piece> getPieceSet(Colour colour){
+        return colour == Colour.WHITE ? getWhitePieceSet() : getBlackPieceSet();
     }
 
     public void printBoard() {
