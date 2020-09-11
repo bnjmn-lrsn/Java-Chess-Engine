@@ -8,17 +8,22 @@ import com.chess.engine.pieces.*;
 
 public class Tritogeneia {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Board newBoard = new Board();
         Player white = new Player(Colour.WHITE, newBoard);
         long start, end;
         start = System.currentTimeMillis();
-        ArrayList<Move> test = white.generateAllPossibleMoves(newBoard);
-        for(Move move : test){
+        ArrayList<Move> testWhite = white.generateAllPossibleMoves(newBoard);
+        for(Move move : testWhite){
             System.out.println(move);
         }
         end = System.currentTimeMillis();
         System.out.println(end - start);
         newBoard.printBoard();
+        Player black = new Player(Colour.BLACK, newBoard);
+        ArrayList<Move> testBlack = black.generateAllPossibleMoves(newBoard);
+        for(Move move : testBlack){
+            System.out.println(move);
+        }
     }
 }
