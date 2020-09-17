@@ -81,8 +81,8 @@ public final class Board {
             blackPieceSet.add(gameBoard[i].getPiece());
         }
         //Black Rooks
-        gameBoard[71].setPiece(new Rook(71, Colour.BLACK));//21
-        blackPieceSet.add(gameBoard[71].getPiece());
+        gameBoard[21].setPiece(new Rook(21, Colour.BLACK));//21
+        blackPieceSet.add(gameBoard[21].getPiece());
         gameBoard[28].setPiece(new Rook(28, Colour.BLACK));
         blackPieceSet.add(gameBoard[28].getPiece());
         //Black Knights
