@@ -16,8 +16,12 @@ public class Rook extends Piece {
         moved = false;
     }
 
-    public String toString() {
+    /*public String toString() {
         return colour == Colour.BLACK ? "r" : "R";
+    }*/
+
+    public String toString() {
+        return "R";
     }
 
     public ArrayList<Move> getPossibleMoves(Board board){

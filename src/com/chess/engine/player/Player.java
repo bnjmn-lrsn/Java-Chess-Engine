@@ -53,6 +53,10 @@ public class Player {
         }
     }
 
+    public boolean isInCheck(Board board){
+        return false;
+    }
+
     private boolean checkForDiagonalThreats(Board board) {
         for(int modifier : diagonalModifiers){
             if(checkForDistantThreat(board, modifier, "Bishop") || checkForDistantThreat(board, modifier, "Queen")){

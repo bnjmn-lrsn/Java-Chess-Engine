@@ -15,8 +15,11 @@ public class Queen extends Piece {
         this.pieceType = "Queen";
     }
 
-    public String toString() {
+    /*public String toString() {
         return colour == Colour.BLACK ? "q" : "Q";
+    }*/
+    public String toString() {
+        return "Q";
     }
 
     public ArrayList<Move> getPossibleMoves(Board board){

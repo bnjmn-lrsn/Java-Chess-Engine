@@ -24,16 +24,17 @@ public abstract class Move {
     public abstract Piece getCapturedPiece();
 
     public int getCoordinateMovedFrom() {
-        return coordinateMovedFrom;
+        return this.coordinateMovedFrom;
     }
 
     public int getCoordinateMovedTo() {
-        return coordinateMovedTo;
+        return this.coordinateMovedTo;
     }
 
     public Piece getPieceMoved() {
-        return pieceMoved;
+        return this.pieceMoved;
     }
+
 
     public static final class PieceMove extends Move {
 
@@ -53,9 +54,10 @@ public abstract class Move {
         }
 
         public String toString() {
-            return pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
+            /*return pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
                     + Board.algebraicCoordinates.get(this.coordinateMovedFrom) + " to "
-                    + Board.algebraicCoordinates.get(this.coordinateMovedTo);
+                    + Board.algebraicCoordinates.get(this.coordinateMovedTo);*/
+            return this.pieceMoved + Board.algebraicCoordinates.get(this.coordinateMovedTo);
         }
     }
 
@@ -76,66 +78,124 @@ public abstract class Move {
 
         @Override
         public Piece getCapturedPiece() {
-            return pieceCaptured;
+            return this.pieceCaptured;
         }
 
         public String toString() {
-           return pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
+           /*return pieceMoved.getColour() + " " + pieceMoved.getPieceType() + " moved from "
                     + Board.algebraicCoordinates.get(this.coordinateMovedFrom) + " to "
                     + Board.algebraicCoordinates.get(this.coordinateMovedTo) +
                     " and captured " + this.pieceCaptured.getColour()
-                    + " " + this.pieceCaptured.getPieceType();
+                    + " " + this.pieceCaptured.getPieceType();*/
 
-            /*return pieceMoved.getPieceType().equals("Pawn") ?
-                    Board.algebraicCoordinates.get(this.coordinateMovedFrom) + " "
-                    + Board.algebraicCoordinates.get(this.coordinateMovedTo) :
-                    pieceMoved + Board.algebraicCoordinates.get(this.coordinateMovedFrom) + " "
-                    + pieceMoved + Board.algebraicCoordinates.get(this.coordinateMovedTo);*/
+           return this.pieceMoved + "x" + Board.algebraicCoordinates.get(this.coordinateMovedTo);
         }
 
     }
 
-    public static final class Promotion extends Move {
+    public static class PawnMove extends Move{
 
-        Piece piecePromotedTo;
-
-        public Promotion(int coordinateMovedFrom, int coordinateMovedTo,
-                         Piece pieceMoved, Piece piecePromotedTo) {
+        public PawnMove(int coordinateMovedFrom, int coordinateMovedTo, Piece pieceMoved) {
             super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
-            this.piecePromotedTo = piecePromotedTo;
         }
 
         @Override
-        public boolean isCapture() { return false; }
+        public boolean isCapture() {
+            return false;
+        }
 
         @Override
-        public Piece getCapturedPiece() { return null; }
+        public Piece getCapturedPiece() {
+            return null;
+        }
 
+        @Override
         public String toString(){
-            return "";
+            return Board.algebraicCoordinates.get(this.coordinateMovedTo);
         }
     }
 
-    public static final class PromotionWithCapture extends Move {
-
+    public static final class PawnCapture extends PawnMove {
         Piece pieceCaptured;
-        Piece piecePromotedTo;
 
-        public PromotionWithCapture(int coordinateMovedFrom, int coordinateMovedTo,
-                                    Piece pieceMoved, Piece pieceCaptured, Piece piecePromotedTo) {
+        public PawnCapture(int coordinateMovedFrom, int coordinateMovedTo,
+                           Piece pieceMoved, Piece pieceCaptured) {
             super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
             this.pieceCaptured = pieceCaptured;
-            this.piecePromotedTo = piecePromotedTo;
         }
 
         @Override
-        public boolean isCapture() { return true; }
+        public boolean isCapture() {
+            return true;
+        }
 
         @Override
-        public Piece getCapturedPiece() { return pieceCaptured; }
+        public Piece getCapturedPiece() {
+            return this.pieceCaptured;
+        }
 
+        @Override
         public String toString(){
-            return "";
+            return Board.algebraicCoordinates.get(this.coordinateMovedFrom) + "x" +
+                    Board.algebraicCoordinates.get(this.coordinateMovedTo);
         }
     }
+
+    public static final class PawnPromotion extends PawnMove {
+        Piece piecePromotedTo;
+
+        public PawnPromotion(int coordinateMovedFrom, int coordinateMovedTo,
+                             Piece pieceMoved, Piece piecePromotedTo) {
+            super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
+            this.piecePromotedTo = piecePromotedTo;
+        }
+    }
+
+    public static class Castle extends Move {
+        Rook rookMoved;
+
+        public Castle(int coordinateMovedFrom, int coordinateMovedTo,
+                      Piece pieceMoved, Rook rookMoved) {
+            super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
+            this.rookMoved = rookMoved;
+        }
+
+        @Override
+        public boolean isCapture() {
+            return false;
+        }
+
+        @Override
+        public Piece getCapturedPiece() {
+            return null;
+        }
+    }
+
+    public static final class QueenSideCastle extends Castle {
+
+        public QueenSideCastle(int coordinateMovedFrom, int coordinateMovedTo,
+                               Piece pieceMoved, Rook rookMoved) {
+            super(coordinateMovedFrom, coordinateMovedTo, pieceMoved, rookMoved);
+        }
+
+        @Override
+        public String toString() {
+            return "O-O-O";
+        }
+    }
+
+    public static final class KingSideCastle extends Castle {
+
+        public KingSideCastle(int coordinateMovedFrom, int coordinateMovedTo,
+                              Piece pieceMoved, Rook rookMoved) {
+            super(coordinateMovedFrom, coordinateMovedTo, pieceMoved, rookMoved);
+        }
+
+        @Override
+        public String toString() {
+            return "O-O";
+        }
+    }
+
+
 }

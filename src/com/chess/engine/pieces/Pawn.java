@@ -13,8 +13,11 @@ public class Pawn extends Piece {
         this.pieceType = "Pawn";
     }
 
-    public String toString() {
+    /*public String toString() {
         return colour == Colour.BLACK ? "p" : "P";
+    }*/
+    public String toString() {
+        return "P";
     }
 
     @Override
@@ -29,13 +32,13 @@ public class Pawn extends Piece {
                 if(board.isValidSquare(newCoordinate)
                         && (!(newSquare.isOccupied())
                         && !(checkSquare.isOccupied()))){
-                    Move move = new Move.PieceMove(coordinate, newCoordinate, this);
+                    Move move = new Move.PawnMove(coordinate, newCoordinate, this);
                     possibleMoves.add(move);
                 }
                 newCoordinate = coordinate - 10;
                 newSquare = board.getSquare(newCoordinate);
                 if(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))){
-                    Move move = new Move.PieceMove(coordinate, newCoordinate, this);
+                    Move move = new Move.PawnMove(coordinate, newCoordinate, this);
                     possibleMoves.add(move);
                 }
                 newCoordinate = coordinate - 11;
@@ -43,7 +46,7 @@ public class Pawn extends Piece {
                 if(board.isValidSquare(newCoordinate)
                         && (newSquare.isOccupied()
                         && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.Capture(coordinate, newCoordinate, this, newSquare.getPiece());
+                    Move move = new Move.PawnCapture(coordinate, newCoordinate, this, newSquare.getPiece());
                     possibleMoves.add(move);
                 }
                 newCoordinate = coordinate - 9;
@@ -51,7 +54,7 @@ public class Pawn extends Piece {
                 if(board.isValidSquare(newCoordinate)
                         && (newSquare.isOccupied()
                         && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.Capture(coordinate, newCoordinate, this, newSquare.getPiece());
+                    Move move = new Move.PawnCapture(coordinate, newCoordinate, this, newSquare.getPiece());
                     possibleMoves.add(move);
                 }
             }
@@ -59,7 +62,7 @@ public class Pawn extends Piece {
                 newCoordinate = coordinate - 10;
                 Square newSquare = board.getSquare(newCoordinate);
                 if(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))){
-                    Move move = new Move.PieceMove(coordinate, newCoordinate, this);
+                    Move move = new Move.PawnMove(coordinate, newCoordinate, this);
                     possibleMoves.add(move);
                 }
                 newCoordinate = coordinate - 11;
@@ -67,7 +70,7 @@ public class Pawn extends Piece {
                 if(board.isValidSquare(newCoordinate)
                         && (newSquare.isOccupied()
                         && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.Capture(coordinate, newCoordinate, this, newSquare.getPiece());
+                    Move move = new Move.PawnCapture(coordinate, newCoordinate, this, newSquare.getPiece());
                     possibleMoves.add(move);
                 }
                 newCoordinate = coordinate - 9;
@@ -75,7 +78,7 @@ public class Pawn extends Piece {
                 if(board.isValidSquare(newCoordinate)
                         && (newSquare.isOccupied()
                         && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.Capture(coordinate, newCoordinate, this, newSquare.getPiece());
+                    Move move = new Move.PawnCapture(coordinate, newCoordinate, this, newSquare.getPiece());
                     possibleMoves.add(move);
                 }
             }

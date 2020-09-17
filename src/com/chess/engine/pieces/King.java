@@ -16,8 +16,11 @@ public class King extends Piece{
         moved = false;
     }
 
-    public String toString() {
+    /*public String toString() {
         return colour == Colour.BLACK ? "k" : "K";
+    }*/
+    public String toString() {
+        return "K";
     }
 
     @Override

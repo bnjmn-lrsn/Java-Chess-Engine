@@ -14,8 +14,11 @@ public class Knight extends Piece{
         this.materialValue = 300;
     }
 
-    public String toString() {
+    /*public String toString() {
         return colour == Colour.BLACK ? "n" : "N";
+    }*/
+    public String toString(){
+        return "N";
     }
 
     public ArrayList<Move> getPossibleMoves(Board board){

@@ -13,8 +13,11 @@ public class Bishop extends Piece {
         this.pieceType = "Bishop";
     }
 
-    public String toString() {
+    /*public String toString() {
         return colour == Colour.BLACK ? "b" : "B";
+    }*/
+    public String toString() {
+        return "B";
     }
 
     public ArrayList<Move> getPossibleMoves(Board board){

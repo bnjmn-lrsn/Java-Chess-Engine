@@ -1,6 +1,7 @@
 package com.chess.engine.board;
 
 import com.chess.engine.pieces.Piece;
+import com.chess.engine.player.Colour;
 
 public class Square {
     private Piece piece;
@@ -41,6 +42,16 @@ public class Square {
         occupied = false;
     }
 
-    public String toString() { return this.occupied ? "|" + this.piece + "|" : "| |"; }
+    public String toString() {
+        if(this.isOccupied()){
+            if(this.getPiece().getColour() == Colour.BLACK){
+                return "|" + this.piece.toString().toLowerCase() + "|";
+            }else {
+                return "|" + this.piece.toString() +  "|";
+            }
+        }else{
+            return "| |";
+        }
+    }
 
 }

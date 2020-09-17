@@ -14,7 +14,7 @@ public final class Board {
     private ArrayList<Piece> blackPieceSet;
     private static final String[] fileDesignators = {"a", "b", "c", "d", "e", "f", "g", "h"};
 
-    public final static HashMap<Integer, String> algebraicCoordinates = initAlgebraicCoordinates();
+    public static final HashMap<Integer, String> algebraicCoordinates = initAlgebraicCoordinates();
 
     public Board() {
         playerToMove = Colour.WHITE;
@@ -81,8 +81,8 @@ public final class Board {
             blackPieceSet.add(gameBoard[i].getPiece());
         }
         //Black Rooks
-        gameBoard[21].setPiece(new Rook(21, Colour.BLACK));//21
-        blackPieceSet.add(gameBoard[21].getPiece());
+        gameBoard[71].setPiece(new Rook(71, Colour.BLACK));//21
+        blackPieceSet.add(gameBoard[71].getPiece());
         gameBoard[28].setPiece(new Rook(28, Colour.BLACK));
         blackPieceSet.add(gameBoard[28].getPiece());
         //Black Knights
@@ -119,11 +119,12 @@ public final class Board {
     }
 
     public boolean isValidSquare(int coordinate) {
-		/*if(coordinate < 0 || coordinate > 119) {
-			return false;
-		}*/
         return gameBoard[coordinate].getCoordinate() >= 0
                 && gameBoard[coordinate].getCoordinate() <= 63;
+    }
+
+    public Square getSquare(int coordinate) {
+        return gameBoard[coordinate];
     }
 
     public ArrayList<Piece> getWhitePieceSet(){
@@ -150,7 +151,5 @@ public final class Board {
         System.out.println();
     }
 
-    public Square getSquare(int coordinate) {
-        return gameBoard[coordinate];
-    }
+
 }
