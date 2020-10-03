@@ -4,29 +4,33 @@ import java.util.ArrayList;
 
 import com.chess.engine.player.*;
 import com.chess.engine.board.*;
-import com.chess.engine.pieces.*;
-import com.chess.gui.Table;
 
 public class Tritogeneia {
 
     public static void main(String[] args) {
-        /*Board newBoard = new Board();
-        Player white = new Player(Colour.WHITE, newBoard);
+        Board newBoard = new Board();
+        System.out.println(newBoard);
+        Player white = new Player(Alliance.WHITE, newBoard);
         //long start, end;
         //start = System.currentTimeMillis();
+        int i = 1;
         ArrayList<Move> testWhite = white.generateAllPossibleMoves(newBoard);
         for(Move move : testWhite){
-            System.out.println(move);
+            System.out.println(i + ". " + move);
+            i++;
         }
         //end = System.currentTimeMillis();
         //System.out.println(end - start);
-        newBoard.printBoard();
-        Player black = new Player(Colour.BLACK, newBoard);
+
+        Player black = new Player(Alliance.BLACK, newBoard);
+        i = 1;
         ArrayList<Move> testBlack = black.generateAllPossibleMoves(newBoard);
         for(Move move : testBlack){
-            System.out.println(move);
-        }*/
+            System.out.println(i + ". " + move);
+            i++;
+        }
+        System.out.println(newBoard);
 
-        Table table = new Table();
+        //Table table = new Table();
     }
 }

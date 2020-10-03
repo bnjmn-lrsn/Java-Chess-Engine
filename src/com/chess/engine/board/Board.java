@@ -8,17 +8,20 @@ import com.chess.engine.player.*;
 
 public final class Board {
     private Square[] gameBoard;
-    private Colour playerToMove;
+    private Alliance playerToMove;
     private ArrayList<Move> moveHistory;
     private ArrayList<Piece> whitePieceSet;
     private ArrayList<Piece> blackPieceSet;
+    private Player whitePlayer;
+    private Player blackPlayer;
+
     private static final String[] fileDesignators = {"a", "b", "c", "d", "e", "f", "g", "h"};
 
     public static final HashMap<Integer, String> algebraicCoordinates = initAlgebraicCoordinates();
 
     public Board() {
-        playerToMove = Colour.WHITE;
-        moveHistory = new ArrayList<>();
+        this.playerToMove = Alliance.WHITE;
+        this.moveHistory = new ArrayList<>();
 
         initBoardSquares();
         initWhitePieces();
@@ -26,10 +29,10 @@ public final class Board {
     }
 
     private void initBoardSquares() {
-        gameBoard = new Square[120];
+        this.gameBoard = new Square[120];
 
-        for(int i = 0; i < gameBoard.length; ++i) {
-            gameBoard[i] = new Square(65);
+        for(int i = 0; i < this.gameBoard.length; ++i) {
+            this.gameBoard[i] = new Square(65);
         }
 
         int sq, sq64;
@@ -37,70 +40,70 @@ public final class Board {
             for(int file = 0; file < 8; ++file) {
                 sq = (21 + file) + (rank * 10);
                 sq64 = rank * 8 + file;
-                gameBoard[sq].setCoordinate(sq64);
+                this.gameBoard[sq].setCoordinate(sq64);
             }
         }
     }
 
     private void initWhitePieces() {
-        whitePieceSet = new ArrayList<>();
+        this.whitePieceSet = new ArrayList<>();
         //White Pawns
         for(int i = 81; i < 89; ++i) {
-            gameBoard[i].setPiece(new Pawn(i, Colour.WHITE));
-            whitePieceSet.add(gameBoard[i].getPiece());
+            this.gameBoard[i].setPiece(new Pawn(i, Alliance.WHITE));
+            this.whitePieceSet.add(this.gameBoard[i].getPiece());
         }
         //White Rooks
-        gameBoard[91].setPiece(new Rook(91, Colour.WHITE));
-        whitePieceSet.add(gameBoard[91].getPiece());
-        gameBoard[98].setPiece(new Rook(98, Colour.WHITE));
-        whitePieceSet.add(gameBoard[98].getPiece());
+        this.gameBoard[91].setPiece(new Rook(91, Alliance.WHITE));
+        this.whitePieceSet.add(this.gameBoard[91].getPiece());
+        this.gameBoard[98].setPiece(new Rook(98, Alliance.WHITE));
+        this.whitePieceSet.add(this.gameBoard[98].getPiece());
         //White Knights
-        gameBoard[92].setPiece(new Knight(92, Colour.WHITE));
-        whitePieceSet.add(gameBoard[92].getPiece());
-        gameBoard[97].setPiece(new Knight(97, Colour.WHITE));
-        whitePieceSet.add(gameBoard[97].getPiece());
+        this.gameBoard[92].setPiece(new Knight(92, Alliance.WHITE));
+        this.whitePieceSet.add(this.gameBoard[92].getPiece());
+        this.gameBoard[97].setPiece(new Knight(97, Alliance.WHITE));
+        this.whitePieceSet.add(this.gameBoard[97].getPiece());
         //White Bishops
-        gameBoard[93].setPiece(new Bishop(93, Colour.WHITE));
-        whitePieceSet.add(gameBoard[93].getPiece());
-        gameBoard[96].setPiece(new Bishop(96, Colour.WHITE));
-        whitePieceSet.add(gameBoard[96].getPiece());
+        this.gameBoard[93].setPiece(new Bishop(93, Alliance.WHITE));
+        this.whitePieceSet.add(this.gameBoard[93].getPiece());
+        this.gameBoard[96].setPiece(new Bishop(96, Alliance.WHITE));
+        this.whitePieceSet.add(this.gameBoard[96].getPiece());
         //White Queen
-        gameBoard[94].setPiece(new Queen(94, Colour.WHITE));//94
-        whitePieceSet.add(gameBoard[94].getPiece());
+        this.gameBoard[94].setPiece(new Queen(94, Alliance.WHITE));//94
+        this.whitePieceSet.add(this.gameBoard[94].getPiece());
         //White King
-        gameBoard[95].setPiece(new King(95, Colour.WHITE));
-        whitePieceSet.add(gameBoard[95].getPiece());
+        this.gameBoard[95].setPiece(new King(95, Alliance.WHITE));
+        this.whitePieceSet.add(this.gameBoard[95].getPiece());
 
     }
 
     private void initBlackPieces() {
-        blackPieceSet = new ArrayList<>();
+        this.blackPieceSet = new ArrayList<>();
         //Black Pawns
         for(int i = 31; i < 39; ++i) {
-            gameBoard[i].setPiece(new Pawn(i, Colour.BLACK));
-            blackPieceSet.add(gameBoard[i].getPiece());
+            this.gameBoard[i].setPiece(new Pawn(i, Alliance.BLACK));
+            this.blackPieceSet.add(this.gameBoard[i].getPiece());
         }
         //Black Rooks
-        gameBoard[21].setPiece(new Rook(21, Colour.BLACK));//21
-        blackPieceSet.add(gameBoard[21].getPiece());
-        gameBoard[28].setPiece(new Rook(28, Colour.BLACK));
-        blackPieceSet.add(gameBoard[28].getPiece());
+        this.gameBoard[21].setPiece(new Rook(21, Alliance.BLACK));//21
+        this.blackPieceSet.add(this.gameBoard[21].getPiece());
+        this.gameBoard[28].setPiece(new Rook(28, Alliance.BLACK));
+        this.blackPieceSet.add(this.gameBoard[28].getPiece());
         //Black Knights
-        gameBoard[22].setPiece(new Knight(22, Colour.BLACK));//22
-        blackPieceSet.add(gameBoard[22].getPiece());
-        gameBoard[27].setPiece(new Knight(27, Colour.BLACK));
-        blackPieceSet.add(gameBoard[27].getPiece());
+        this.gameBoard[22].setPiece(new Knight(22, Alliance.BLACK));//22
+        this.blackPieceSet.add(this.gameBoard[22].getPiece());
+        this.gameBoard[27].setPiece(new Knight(27, Alliance.BLACK));
+        this.blackPieceSet.add(this.gameBoard[27].getPiece());
         //Black Bishops
-        gameBoard[23].setPiece(new Bishop(23, Colour.BLACK));
-        blackPieceSet.add(gameBoard[23].getPiece());
-        gameBoard[26].setPiece(new Bishop(26, Colour.BLACK));
-        blackPieceSet.add(gameBoard[26].getPiece());
+        this.gameBoard[23].setPiece(new Bishop(23, Alliance.BLACK));
+        this.blackPieceSet.add(this.gameBoard[23].getPiece());
+        this.gameBoard[26].setPiece(new Bishop(26, Alliance.BLACK));
+        this.blackPieceSet.add(this.gameBoard[26].getPiece());
         //Black Queen
-        gameBoard[24].setPiece(new Queen(24, Colour.BLACK));
-        blackPieceSet.add(gameBoard[24].getPiece());
+        this.gameBoard[24].setPiece(new Queen(24, Alliance.BLACK));
+        this.blackPieceSet.add(this.gameBoard[24].getPiece());
         //Black King
-        gameBoard[25].setPiece(new King(25, Colour.BLACK));
-        blackPieceSet.add(gameBoard[25].getPiece());
+        this.gameBoard[25].setPiece(new King(25, Alliance.BLACK));
+        this.blackPieceSet.add(this.gameBoard[25].getPiece());
     }
 
     private static HashMap<Integer, String> initAlgebraicCoordinates() {
@@ -119,37 +122,64 @@ public final class Board {
     }
 
     public boolean isValidSquare(int coordinate) {
-        return gameBoard[coordinate].getCoordinate() >= 0
-                && gameBoard[coordinate].getCoordinate() <= 63;
+        return this.gameBoard[coordinate].getCoordinate() >= 0
+               && this.gameBoard[coordinate].getCoordinate() <= 63;
     }
 
     public Square getSquare(int coordinate) {
-        return gameBoard[coordinate];
+        return this.gameBoard[coordinate];
     }
 
     public ArrayList<Piece> getWhitePieceSet(){
-        return whitePieceSet;
+        return this.whitePieceSet;
     }
 
     public ArrayList<Piece> getBlackPieceSet(){
-        return blackPieceSet;
+        return this.blackPieceSet;
     }
 
-    public ArrayList<Piece> getPieceSet(Colour colour){
-        return colour == Colour.WHITE ? getWhitePieceSet() : getBlackPieceSet();
+    public ArrayList<Piece> getPieceSet(Alliance alliance) {
+        return alliance == Alliance.WHITE ? getWhitePieceSet() : getBlackPieceSet();
     }
 
-    public void printBoard() {
-        for(int i = 20; i < 100; ++i) {
-            if (i % 10 == 0) {
-                System.out.println();
+    public Player getWhitePlayer() {
+        return this.whitePlayer;
+    }
+
+    public Player getBlackPlayer() {
+        return this.blackPlayer;
+    }
+
+    public void makeMove(Move move) {
+        move.makeMove(this);
+        move.getPieceMoved().setMovedState();
+        this.moveHistory.add(move);
+        if(this.playerToMove == Alliance.WHITE) {
+            playerToMove = Alliance.BLACK;
+        }
+        else {
+            playerToMove = Alliance.WHITE;
+        }
+    }
+
+    public ArrayList<Move> getMoveHistory() {
+        return this.moveHistory;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder board = new StringBuilder();
+
+        for(int i = 20; i < 100; ++i){
+            if(i % 10 == 0) {
+                board.append("\n");
             }
-            if(isValidSquare(i)) {
-                System.out.print(gameBoard[i]);
+            if(isValidSquare(i)){
+                board.append(gameBoard[i]);
             }
         }
-        System.out.println();
-    }
 
+        return board.toString();
+    }
 
 }

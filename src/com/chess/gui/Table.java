@@ -1,12 +1,16 @@
 package com.chess.gui;
 
 import com.chess.engine.board.Board;
+import com.chess.engine.board.Square;
+import com.chess.engine.pieces.Piece;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,20 +23,21 @@ public class Table {
     private final BoardPanel boardPanel;
     private final Board chessBoard;
 
-    //private final Color lightSquareColour = Color.decode("#FFFACD");//light brown
-    //private final Color darkSquareColour = Color.decode("#593E1A");//dark brown
+    private Square sourceSquare;
+    private Square destinationSquare;
+    private Piece humanMovedPiece;
 
     //private final Color lightSquareColour = Color.decode("#d3cfde");//light gray
     //private final Color darkSquareColour = Color.decode("#808080");//dark dray
 
     private static String defaultPieceImagePath = "art" + File.separator + "standard" + File.separator;
     private final Color lightSquareColour = Color.decode("#dcb075");//light pink/brown
-    private final Color darkSquareColour = Color.decode("#65000b");// red/brown
-    //private final Color darkSquareColour = Color.decode("#320005");//dark red/brown
+    //private final Color darkSquareColour = Color.decode("#65000b");// red/brown
+    private final Color darkSquareColour = Color.decode("#320005");//dark red/brown
 
-    private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(600,600);
+    private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(550,550);
     private final static Dimension BOARD_PANEL_DIMENSION = new Dimension(400, 350);
-    private final static Dimension SQUARE_PANEL_DIMENSION = new Dimension(10, 10);
+    private final static Dimension SQUARE_PANEL_DIMENSION = new Dimension(8, 8);
 
     public Table(){
         this.gameFrame = new JFrame("Tritogeneia");
@@ -77,7 +82,7 @@ public class Table {
     }
 
     private class BoardPanel extends JPanel {
-        final List<SquarePanel> boardSquares;
+        private final List<SquarePanel> boardSquares;
         
         BoardPanel(){
             super(new GridLayout(8,8));
@@ -104,16 +109,62 @@ public class Table {
             setPreferredSize(SQUARE_PANEL_DIMENSION);
             assignSquareColour();
             assignSquarePieceIcon(chessBoard);
+
+            addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+
+                    /*if(isRightMouseButton(event)) {
+                        if(sourceSquare == null) {
+                            sourceSquare = chessBoard.getSquare(squareID);
+                            humanMovedPiece = sourceSquare.getPiece();
+                            if(humanMovedPiece == null){
+                                sourceSquare = null;
+                            }
+                        } else {
+                            destinationSquare = chessBoard.getSquare(squareID);
+                            final Move move = null;
+
+
+                        }
+
+
+                    } else if(isLeftMouseButton(event)) {
+
+                    }*/
+
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+
+                }
+            });
+
             validate();
         }
 
         private void assignSquarePieceIcon(Board board) {
             this.removeAll();
             if(board.getSquare(this.squareID).isOccupied()){
-                //String pieceIconPath = "";
                 try {
                     final BufferedImage image = ImageIO.read(new File(defaultPieceImagePath +
-                            board.getSquare(this.squareID).getPiece().getColour().toString().substring(0, 1) +
+                            board.getSquare(this.squareID).getPiece().getAlliance().toString().substring(0, 1) +
                             board.getSquare(this.squareID).getPiece().toString() + ".gif"));
                     add(new JLabel(new ImageIcon(image)));
                 }

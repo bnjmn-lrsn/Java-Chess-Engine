@@ -1,7 +1,7 @@
 package com.chess.engine.board;
 
 import com.chess.engine.pieces.Piece;
-import com.chess.engine.player.Colour;
+import com.chess.engine.player.Alliance;
 
 public class Square {
     private Piece piece;
@@ -10,7 +10,8 @@ public class Square {
 
     public Square(int coordinate) {
         this.coordinate = coordinate;
-        occupied = false;
+        this.occupied = false;
+        this.piece = null;
     }
 
     public void setCoordinate(int coordinate) {
@@ -18,33 +19,33 @@ public class Square {
     }
 
     public int getCoordinate() {
-        return coordinate;
+        return this.coordinate;
     }
 
     public void setPiece(Piece piece) {
         this.piece = piece;
-        occupied = true;
+        this.occupied = true;
     }
     public Piece getPiece() {
         if(isOccupied()) {
-            return piece;
+            return this.piece;
         }else {
             return null;
         }
     }
 
     public boolean isOccupied() {
-        return occupied;
+        return this.occupied;
     }
 
     public void removePiece() {
-        piece = null;
-        occupied = false;
+        this.piece = null;
+        this.occupied = false;
     }
 
     public String toString() {
         if(this.isOccupied()){
-            if(this.getPiece().getColour() == Colour.BLACK){
+            if(this.getPiece().getAlliance() == Alliance.BLACK){
                 return "|" + this.piece.toString().toLowerCase() + "|";
             }else {
                 return "|" + this.piece.toString() +  "|";

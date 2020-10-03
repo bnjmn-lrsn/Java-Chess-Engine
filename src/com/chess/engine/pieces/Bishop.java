@@ -7,42 +7,39 @@ import com.chess.engine.player.*;
 public class Bishop extends Piece {
     private final int[] coordinateModifiers = {-11, -9, 9, 11};
 
-    public Bishop(int coordinate, Colour colour) {
-        super(coordinate, colour);
+    public Bishop(int coordinate, Alliance alliance) {
+        super(coordinate, alliance);
         this.materialValue = 305;
         this.pieceType = "Bishop";
     }
 
-    /*public String toString() {
-        return colour == Colour.BLACK ? "b" : "B";
-    }*/
     public String toString() {
         return "B";
     }
 
     public ArrayList<Move> getPossibleMoves(Board board){
-        possibleMoves = new ArrayList<>();
+        this.possibleMoves = new ArrayList<>();
         int distanceModifier = 1;
         int newCoordinate;
         Square newSquare;
-        for (int coordinateModifier : coordinateModifiers) {
-            newCoordinate = coordinate + distanceModifier * coordinateModifier;
+        for (int coordinateModifier : this.coordinateModifiers) {
+            newCoordinate = this.coordinate + distanceModifier * coordinateModifier;
             newSquare = board.getSquare(newCoordinate);
             while (board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))) {
-                Move move = new Move.PieceMove(coordinate, newCoordinate, this);
-                possibleMoves.add(move);
+                Move move = new Move.PieceMove(this.coordinate, newCoordinate, this);
+                this.possibleMoves.add(move);
                 distanceModifier++;
-                newCoordinate = coordinate + distanceModifier * coordinateModifier;
+                newCoordinate = this.coordinate + distanceModifier * coordinateModifier;
                 newSquare = board.getSquare(newCoordinate);
             }
             if (board.isValidSquare(newCoordinate) &&
                     ((newSquare.isOccupied()) &&
-                            (newSquare.getPiece().getColour() != colour))) {
-                Move move = new Move.Capture(coordinate, newCoordinate, this, newSquare.getPiece());
-                possibleMoves.add(move);
+                            (newSquare.getPiece().getAlliance() != this.alliance))) {
+                Move move = new Move.Capture(this.coordinate, newCoordinate, this, newSquare.getPiece());
+                this.possibleMoves.add(move);
             }
             distanceModifier = 1;
         }
-        return possibleMoves;
+        return this.possibleMoves;
     }
 }

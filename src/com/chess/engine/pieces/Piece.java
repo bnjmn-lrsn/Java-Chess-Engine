@@ -7,25 +7,27 @@ import com.chess.engine.player.*;
 
 public abstract class Piece {
     protected int coordinate;
-    protected final Colour colour;
+    protected final Alliance alliance;
     protected int materialValue;
     protected ArrayList<Move> possibleMoves;
     protected String pieceType;
+    protected boolean moved;
 
-    public Piece(int coordinate, Colour colour) {
+    public Piece(int coordinate, Alliance alliance) {
         this.coordinate = coordinate;
-        this.colour = colour;
+        this.alliance = alliance;
         possibleMoves = new ArrayList<>();
         materialValue = 0;
+        moved = false;
     }
 
-    public Piece(int coordinate, Colour colour, int value) {
-        this(coordinate, colour);
-        materialValue = value;
+    public Piece(int coordinate, Alliance alliance, int value) {
+        this(coordinate, alliance);
+        this.materialValue = value;
     }
 
-    public Piece(int coordinate, Colour colour, int value, String pieceType) {
-        this(coordinate, colour, value);
+    public Piece(int coordinate, Alliance alliance, int value, String pieceType) {
+        this(coordinate, alliance, value);
         this.pieceType = pieceType;
     }
 
@@ -34,19 +36,25 @@ public abstract class Piece {
     }
 
     public int getCoordinate() {
-        return coordinate;
+        return this.coordinate;
     }
 
     public int getValue() {
-        return materialValue;
+        return this.materialValue;
     }
 
-    public Colour getColour() {
-        return colour;
+    public Alliance getAlliance() {
+        return this.alliance;
     }
 
     public String getPieceType() {
-        return pieceType;
+        return this.pieceType;
+    }
+
+    public boolean hasMoved() { return this.moved; }
+
+    public void setMovedState() {
+        this.moved = true;
     }
 
     public abstract ArrayList<Move> getPossibleMoves(Board board);

@@ -1,5 +1,5 @@
 package com.chess.engine.player;
 
-public enum Colour {
+public enum Alliance {
     WHITE, BLACK
 }

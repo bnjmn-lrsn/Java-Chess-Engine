@@ -6,138 +6,279 @@ import com.chess.engine.board.*;
 import com.chess.engine.player.*;
 
 public class Pawn extends Piece {
+    private Piece promotionPiece;
 
-    public Pawn(int coordinate, Colour colour) {
-        super(coordinate, colour);
+    public Pawn(int coordinate, Alliance alliance) {
+        super(coordinate, alliance);
         this.materialValue = 100;
         this.pieceType = "Pawn";
     }
 
-    /*public String toString() {
-        return colour == Colour.BLACK ? "p" : "P";
-    }*/
-    public String toString() {
-        return "P";
-    }
+    public String toString() { return "P"; }
 
     @Override
     public ArrayList<Move> getPossibleMoves(Board board) {
-        possibleMoves = new ArrayList<>();
+        this.possibleMoves = new ArrayList<>();
         int newCoordinate;
-        if(colour == Colour.WHITE) {
-            if(coordinate >= 81) {
-                newCoordinate = coordinate - 20;
-                Square newSquare = board.getSquare(newCoordinate);
-                Square checkSquare = board.getSquare(coordinate - 10);
-                if(board.isValidSquare(newCoordinate)
-                        && (!(newSquare.isOccupied())
-                        && !(checkSquare.isOccupied()))){
-                    Move move = new Move.PawnMove(coordinate, newCoordinate, this);
-                    possibleMoves.add(move);
-                }
-                newCoordinate = coordinate - 10;
+        Square newSquare;
+        Square checkSquare;
+        Move move;
+
+        if(this.alliance == Alliance.WHITE) {
+            //Move from starting position
+            if(this.coordinate >= 81) {
+                newCoordinate = this.coordinate - 20;
                 newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))){
-                    Move move = new Move.PawnMove(coordinate, newCoordinate, this);
-                    possibleMoves.add(move);
+                checkSquare = board.getSquare(coordinate - 10);
+
+                if(!newSquare.isOccupied() && !checkSquare.isOccupied()){
+                    move = new Move.PawnMove(this.coordinate, newCoordinate, this);
+                    this.possibleMoves.add(move);
                 }
-                newCoordinate = coordinate - 11;
-                newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate)
-                        && (newSquare.isOccupied()
-                        && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.PawnCapture(coordinate, newCoordinate, this, newSquare.getPiece());
-                    possibleMoves.add(move);
+                newCoordinate = this.coordinate - 10;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(!(newSquare.isOccupied())){
+                        move = new Move.PawnMove(this.coordinate, newCoordinate, this);
+                        this.possibleMoves.add(move);
+                    }
                 }
-                newCoordinate = coordinate - 9;
-                newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate)
-                        && (newSquare.isOccupied()
-                        && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.PawnCapture(coordinate, newCoordinate, this, newSquare.getPiece());
-                    possibleMoves.add(move);
+                newCoordinate = this.coordinate - 11;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        move = new Move.PawnCapture(this.coordinate, newCoordinate, this, newSquare.getPiece());
+                        this.possibleMoves.add(move);
+                    }
+                }
+
+                newCoordinate = this.coordinate - 9;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        move = new Move.PawnCapture(this.coordinate, newCoordinate, this, newSquare.getPiece());
+                        this.possibleMoves.add(move);
+                    }
                 }
             }
-            else if(coordinate < 81 && coordinate > 38) {
-                newCoordinate = coordinate - 10;
-                Square newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))){
-                    Move move = new Move.PawnMove(coordinate, newCoordinate, this);
-                    possibleMoves.add(move);
+            //Moving up the board to the seventh rank
+            else if(this.coordinate < 81 && this.coordinate > 38) {
+                newCoordinate = this.coordinate - 10;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(!(newSquare.isOccupied())){
+                        move = new Move.PawnMove(this.coordinate, newCoordinate, this);
+                        this.possibleMoves.add(move);
+                    }
                 }
-                newCoordinate = coordinate - 11;
-                newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate)
-                        && (newSquare.isOccupied()
-                        && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.PawnCapture(coordinate, newCoordinate, this, newSquare.getPiece());
-                    possibleMoves.add(move);
+                newCoordinate = this.coordinate - 11;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        move = new Move.PawnCapture(this.coordinate, newCoordinate, this, newSquare.getPiece());
+                        this.possibleMoves.add(move);
+                    }
                 }
-                newCoordinate = coordinate - 9;
-                newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate)
-                        && (newSquare.isOccupied()
-                        && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.PawnCapture(coordinate, newCoordinate, this, newSquare.getPiece());
-                    possibleMoves.add(move);
-                }
-            }
-        }else if(colour == Colour.BLACK){
-            if(coordinate <= 38){
-                newCoordinate = coordinate + 20;
-                Square newSquare = board.getSquare(newCoordinate);
-                Square checkSquare = board.getSquare(coordinate + 10);
-                if(board.isValidSquare(newCoordinate)
-                        && (!(newSquare.isOccupied())
-                        && !(checkSquare.isOccupied()))){
-                    Move move = new Move.PieceMove(coordinate, newCoordinate, this);
-                    possibleMoves.add(move);
-                }
-                newCoordinate = coordinate + 10;
-                newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))){
-                    Move move = new Move.PieceMove(coordinate, newCoordinate, this);
-                    possibleMoves.add(move);
-                }
-                newCoordinate = coordinate + 11;
-                newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate)
-                        && (newSquare.isOccupied()
-                        && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.Capture(coordinate, newCoordinate, this, newSquare.getPiece());
-                    possibleMoves.add(move);
-                }
-                newCoordinate = coordinate + 9;
-                newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate)
-                        && (newSquare.isOccupied()
-                        && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.Capture(coordinate, newCoordinate, this, newSquare.getPiece());
-                    possibleMoves.add(move);
+                newCoordinate = this.coordinate - 9;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        move = new Move.PawnCapture(this.coordinate, newCoordinate, this, newSquare.getPiece());
+                        this.possibleMoves.add(move);
+                    }
                 }
             }
-            else if(coordinate > 38 && coordinate < 81) {
-                newCoordinate = coordinate + 10;
-                Square newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))){
-                    Move move = new Move.PieceMove(coordinate, newCoordinate, this);
-                    possibleMoves.add(move);
+            //Promotions: pawns are obligated to promote once they reach the opposite end of the board.
+            else if(this.coordinate <= 38){
+                newCoordinate = this.coordinate - 10;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(!newSquare.isOccupied()){
+                        this.promotionPiece = new Knight(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotion(this.coordinate, newCoordinate, this, this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Bishop(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotion(this.coordinate, newCoordinate, this, this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Rook(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotion(this.coordinate, newCoordinate, this, this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Queen(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotion(this.coordinate, newCoordinate, this, this.promotionPiece);
+                        this.possibleMoves.add(move);
+                    }
                 }
-                newCoordinate = coordinate + 11;
-                newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate)
-                        && (newSquare.isOccupied()
-                        && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.Capture(coordinate, newCoordinate, this, newSquare.getPiece());
-                    possibleMoves.add(move);
+                newCoordinate = this.coordinate - 9;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        this. promotionPiece = new Knight(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Bishop(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Rook(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Queen(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+                    }
                 }
-                newCoordinate = coordinate + 9;
-                newSquare = board.getSquare(newCoordinate);
-                if(board.isValidSquare(newCoordinate)
-                        && (newSquare.isOccupied()
-                        && newSquare.getPiece().getColour() != colour)) {
-                    Move move = new Move.Capture(coordinate, newCoordinate, this, newSquare.getPiece());
-                    possibleMoves.add(move);
+                newCoordinate = this.coordinate - 11;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        this. promotionPiece = new Knight(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(),this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Bishop(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Rook(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Queen(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+                    }
+                }
+            }
+        }else if(this.alliance == Alliance.BLACK){
+            if(this.coordinate <= 38){
+                newCoordinate = this.coordinate + 20;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    checkSquare = board.getSquare(this.coordinate + 10);
+                    if(!newSquare.isOccupied() && !checkSquare.isOccupied()){
+                        move = new Move.PawnMove(this.coordinate, newCoordinate, this);
+                        this.possibleMoves.add(move);
+                    }
+                }
+                newCoordinate = this.coordinate + 10;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(!(newSquare.isOccupied())){
+                        move = new Move.PawnMove(this.coordinate, newCoordinate, this);
+                        this.possibleMoves.add(move);
+                    }
+                }
+                newCoordinate = this.coordinate + 11;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        move = new Move.PawnCapture(this.coordinate, newCoordinate, this, newSquare.getPiece());
+                        this.possibleMoves.add(move);
+                    }
+                }
+                newCoordinate = this.coordinate + 9;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        move = new Move.PawnCapture(this.coordinate, newCoordinate, this, newSquare.getPiece());
+                        this.possibleMoves.add(move);
+                    }
+                }
+            }
+            else if(this.coordinate > 38 && this.coordinate < 81) {
+                newCoordinate = this.coordinate + 10;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(!(newSquare.isOccupied())){
+                        move = new Move.PawnMove(this.coordinate, newCoordinate, this);
+                        this.possibleMoves.add(move);
+                    }
+                }
+                newCoordinate = this.coordinate + 11;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        move = new Move.PawnCapture(this.coordinate, newCoordinate, this, newSquare.getPiece());
+                        this.possibleMoves.add(move);
+                    }
+                }
+                newCoordinate = this.coordinate + 9;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        move = new Move.PawnCapture(this.coordinate, newCoordinate, this, newSquare.getPiece());
+                        this.possibleMoves.add(move);
+                    }
+                }
+            }
+            else if(this.coordinate >= 81){
+                newCoordinate = this.coordinate + 10;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(!newSquare.isOccupied()){
+                        this.promotionPiece = new Knight(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotion(this.coordinate, newCoordinate, this, this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Bishop(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotion(this.coordinate, newCoordinate, this, this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Rook(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotion(this.coordinate, newCoordinate, this, this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Queen(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotion(this.coordinate, newCoordinate, this, this.promotionPiece);
+                        this.possibleMoves.add(move);
+                    }
+                }
+                newCoordinate = this.coordinate + 9;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        this. promotionPiece = new Knight(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Bishop(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Rook(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Queen(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+                    }
+                }
+                newCoordinate = this.coordinate + 11;
+                if(board.isValidSquare(newCoordinate)){
+                    newSquare = board.getSquare(newCoordinate);
+                    if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                        this. promotionPiece = new Knight(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(),this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Bishop(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Rook(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+
+                        this.promotionPiece = new Queen(newCoordinate, this.alliance);
+                        move = new Move.PawnPromotionWithCapture(this.coordinate, newCoordinate, this, newSquare.getPiece(), this.promotionPiece);
+                        this.possibleMoves.add(move);
+                    }
                 }
             }
         }
