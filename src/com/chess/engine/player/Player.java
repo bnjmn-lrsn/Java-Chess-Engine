@@ -8,6 +8,7 @@ import com.chess.engine.board.*;
 public class Player {
     private ArrayList<Piece> materialInPlay;
     private ArrayList<Move> allPossibleMoves;
+    private final int directionModifier;
     private final Alliance alliance;
     private final Piece king;
     private final int[] diagonalModifiers = {-11, -9, 9, 11};
@@ -17,7 +18,8 @@ public class Player {
 
     public Player(Alliance alliance, Board board) {
         this.alliance = alliance;
-        this.materialInPlay = board.getPieceSet(alliance);
+        calculateActivePieces(board);
+        this.directionModifier = alliance.getDirectionModifier();
         this.king = this.materialInPlay.get(this.materialInPlay.size() - 1);
     }
 
@@ -54,12 +56,25 @@ public class Player {
     }
 
     public boolean isInCheck(Board board){
-        return false;
+        if(checkForDiagonalThreats(board)) {
+            return true;
+        }else if(checkForRankFileThreats(board)) {
+            return true;
+        }else if(checkForKnightThreats(board)) {
+            return true;
+        }else if(checkForPawnThreats(board)) {
+            return true;
+        }else if(checkForOpposingKing(board)) {
+            return true;
+        }else {
+            return false;
+        }
     }
 
     private boolean checkForDiagonalThreats(Board board) {
         for(int modifier : this.diagonalModifiers){
-            if(checkForDistantThreat(board, modifier, "Bishop") || checkForDistantThreat(board, modifier, "Queen")){
+            if(checkForDistantThreat(board, modifier, "Bishop")
+                    || checkForDistantThreat(board, modifier, "Queen")){
                 return true;
             }
         }
@@ -68,7 +83,8 @@ public class Player {
 
     private boolean checkForRankFileThreats(Board board) {
         for(int modifier : this.rankFileModifiers){
-            if(checkForDistantThreat(board, modifier, "Rook") || checkForDistantThreat(board, modifier, "Queen")){
+            if(checkForDistantThreat(board, modifier, "Rook")
+                    || checkForDistantThreat(board, modifier, "Queen")){
                 return true;
             }
         }
@@ -85,22 +101,11 @@ public class Player {
     }
 
     private boolean checkForPawnThreats(Board board) {
-        if(this.alliance == Alliance.WHITE){
-            if(checkForThreat(board, -11, "Pawn")){
-                return true;
-            }
-            else return checkForThreat(board, -9, "Pawn");
-        }
-        else if(this.alliance == Alliance.BLACK){
-            if(checkForThreat(board, 11, "Pawn")){
-                return true;
-            }
-            else return checkForThreat(board, 9, "Pawn");
-        }
-        return false;
+        return checkForThreat(board, (directionModifier * 11), "Pawn")
+                || (checkForThreat(board, (directionModifier * 9), "Pawn"));
     }
 
-    private boolean checkForOpposingKing(Board board) {
+    private boolean checkForOpposingKing(Board board){
         for(int modifier : this.kingModifiers) {
             if(checkForThreat(board, modifier, "King")){
                 return true;
@@ -109,7 +114,7 @@ public class Player {
         return false;
     }
 
-    private boolean checkForThreat(Board board, int modifier, String pieceType){
+    private boolean checkForThreat(Board board, int modifier, String pieceType) {
         int kingSquare = this.king.getCoordinate();
         int newCoordinate;
         Square newSquare;
@@ -126,7 +131,7 @@ public class Player {
         return false;
     }
 
-    private boolean checkForDistantThreat(Board board, int modifier, String pieceType){
+    private boolean checkForDistantThreat(Board board, int modifier, String pieceType) {
         int distanceModifier = 1;
         int kingSquare = this.king.getCoordinate();
         int newCoordinate;
@@ -134,7 +139,7 @@ public class Player {
 
         newCoordinate = kingSquare + distanceModifier * modifier;
         newSquare = board.getSquare(newCoordinate);
-        while(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))) {
+        while(board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))){
             distanceModifier++;
             newCoordinate = kingSquare + distanceModifier * modifier;
             newSquare = board.getSquare(newCoordinate);
@@ -142,50 +147,133 @@ public class Player {
         return checkForThreat(board, distanceModifier * modifier, pieceType);
     }
 
-    public ArrayList<Move> generateAllPossibleMoves(Board board){
+    private ArrayList<Move> generateCastlingMoves(Board board){
+        ArrayList<Move> castlingMoves = new ArrayList<>();
+
+        Square newSquare;
+        Piece piece;
+        Move move;
+        int rookCoordinate;
+        int transitionCoordinate, destinationCoordinate, queenKnightCoordinate;
+        int kingStartCoordinate = this.alliance.getKingStartingCoordinate();
+
+        if(!this.king.hasMoved() && !isInCheck(board)){
+            //king-side castling
+            rookCoordinate = this.alliance.getKingSideRookCoordinate();
+            newSquare = board.getSquare(rookCoordinate);
+            if(newSquare.isOccupied()){
+                piece = newSquare.getPiece();
+                if((piece.getPieceType().equals("Rook") && !piece.hasMoved())
+                        && piece.getAlliance() == this.alliance){
+                    transitionCoordinate = this.alliance.getKingSideTransitionCoordinate();
+                    destinationCoordinate = this.alliance.getKingSideCastlingCoordinate();
+                    if(!board.getSquare(transitionCoordinate).isOccupied() && !board.getSquare(destinationCoordinate).isOccupied()){
+                        board.getSquare(transitionCoordinate).setPiece(this.king);
+                        this.king.setCoordinate(transitionCoordinate);
+                        board.getSquare(kingStartCoordinate).removePiece();
+                        if(!isInCheck(board)){
+                            board.getSquare(transitionCoordinate).removePiece();
+                            board.getSquare(destinationCoordinate).setPiece(this.king);
+                            this.king.setCoordinate(destinationCoordinate);
+                            if(!isInCheck(board)){
+                                this.king.setCoordinate(kingStartCoordinate);
+                                board.getSquare(kingStartCoordinate).setPiece(this.king);
+                                board.getSquare(destinationCoordinate).removePiece();
+                                move = new Move.KingSideCastle(kingStartCoordinate, destinationCoordinate, this.king,
+                                        rookCoordinate, transitionCoordinate, piece);
+                                castlingMoves.add(move);
+                            }else{
+                                this.king.setCoordinate(kingStartCoordinate);
+                                board.getSquare(destinationCoordinate).removePiece();
+                                board.getSquare(kingStartCoordinate).setPiece(this.king);
+                            }
+                        }else{
+                            this.king.setCoordinate(kingStartCoordinate);
+                            board.getSquare(transitionCoordinate).removePiece();
+                            board.getSquare(kingStartCoordinate).setPiece(this.king);
+                        }
+                    }
+                }
+            }
+            //queen-side castling
+            rookCoordinate = this.alliance.getQueenSideRookCoordinate();
+            newSquare = board.getSquare(rookCoordinate);
+            if(newSquare.isOccupied()) {
+                piece = newSquare.getPiece();
+                if ((piece.getPieceType().equals("Rook") && !piece.hasMoved())
+                        && piece.getAlliance() == this.alliance) {
+                    transitionCoordinate = this.alliance.getQueenSideTransitionCoordinate();
+                    destinationCoordinate = this.alliance.getQueenSideCastlingCoordinate();
+                    queenKnightCoordinate = this.alliance.getQueenKnightCoordinate();
+                    if(!board.getSquare(transitionCoordinate).isOccupied() && !board.getSquare(destinationCoordinate).isOccupied()
+                            && !board.getSquare(queenKnightCoordinate).isOccupied()){
+                        board.getSquare(transitionCoordinate).setPiece(this.king);
+                        this.king.setCoordinate(transitionCoordinate);
+                        board.getSquare(kingStartCoordinate).removePiece();
+                        if(!isInCheck(board)){
+                            board.getSquare(destinationCoordinate).setPiece(this.king);
+                            this.king.setCoordinate(destinationCoordinate);
+                            board.getSquare(transitionCoordinate).removePiece();
+                            if(!isInCheck(board)){
+                                this.king.setCoordinate(kingStartCoordinate);
+                                board.getSquare(kingStartCoordinate).setPiece(this.king);
+                                board.getSquare(destinationCoordinate).removePiece();
+                                move = new Move.QueenSideCastle(kingStartCoordinate, destinationCoordinate, this.king,
+                                        rookCoordinate, transitionCoordinate, piece);
+                                castlingMoves.add(move);
+                            }else{
+                                this.king.setCoordinate(kingStartCoordinate);
+                                board.getSquare(kingStartCoordinate).setPiece(this.king);
+                                board.getSquare(destinationCoordinate).removePiece();
+                            }
+                        }else{
+                            board.getSquare(kingStartCoordinate).setPiece(this.king);
+                            this.king.setCoordinate(kingStartCoordinate);
+                            board.getSquare(transitionCoordinate).removePiece();
+                        }
+                    }
+                }
+            }
+        }
+        return castlingMoves;
+    }
+
+    private void calculateActivePieces(Board board){
+        this.materialInPlay = new ArrayList<>();
+        Square sq;
+        for(int i = 0; i < board.getBoardSize(); ++i){
+            if(board.isValidSquare(i)){
+                sq = board.getSquare(i);
+                if(sq.isOccupied() && sq.getPiece().getAlliance() == this.alliance){
+                    this.materialInPlay.add(sq.getPiece());
+                }
+            }
+        }
+    }
+
+    public ArrayList<Move> generateAllPossibleMoves(Board board) {
+        calculateActivePieces(board);
         this.allPossibleMoves = new ArrayList<>();
         ArrayList<Move> currentPieceMoves;
-        for(Piece piece : this.materialInPlay) {
+        for(Piece piece : this.materialInPlay){
             currentPieceMoves = piece.getPossibleMoves(board);
-            for(Move move : currentPieceMoves) {
-                if(kingIsSafe(move, board)) {
+            for(Move move : currentPieceMoves){
+                if(kingIsSafe(move, board)){
                     this.allPossibleMoves.add(move);
                 }
             }
+        }
+        if(!this.king.hasMoved()){
+            this.allPossibleMoves.addAll(generateCastlingMoves(board));
         }
         return this.allPossibleMoves;
     }
 
     public void makeMove(Move move, Board board) {
-        /*int coordinateMovedFrom = move.getCoordinateMovedFrom();
-        int coordinateMovedTo = move.getCoordinateMovedTo();
-        Square squareMovedTo = board.getSquare(coordinateMovedTo);
-        Square squareMovedFrom = board.getSquare(coordinateMovedFrom);
-        Piece pieceMoved = move.getPieceMoved();
-
-        squareMovedTo.setPiece(pieceMoved);
-        pieceMoved.setCoordinate(coordinateMovedTo);
-        squareMovedFrom.removePiece();*/
         move.makeMove(board);
     }
 
     public void undoMove(Move move, Board board) {
-        /*int coordinateMovedFrom = move.getCoordinateMovedFrom();
-        int coordinateMovedTo = move.getCoordinateMovedTo();
-        Square squareMovedTo = board.getSquare(coordinateMovedTo);
-        Square squareMovedFrom = board.getSquare(coordinateMovedFrom);
-        Piece pieceMoved = move.getPieceMoved();
-
-        if(move.isCapture()) {
-            Piece oldPiece = move.getCapturedPiece();
-            squareMovedTo.setPiece(oldPiece);
-            pieceMoved.setCoordinate(coordinateMovedFrom);
-            squareMovedFrom.setPiece(pieceMoved);
-        }else {
-            squareMovedFrom.setPiece(pieceMoved);
-            pieceMoved.setCoordinate(coordinateMovedFrom);
-            squareMovedTo.removePiece();
-        }*/
         move.undoMove(board);
     }
 }

@@ -7,11 +7,13 @@ public class Square {
     private Piece piece;
     private boolean occupied;
     private int coordinate;
+    private final int index;
 
-    public Square(int coordinate) {
+    public Square(int coordinate, int index) {
         this.coordinate = coordinate;
         this.occupied = false;
         this.piece = null;
+        this.index = index;
     }
 
     public void setCoordinate(int coordinate) {
@@ -25,11 +27,12 @@ public class Square {
     public void setPiece(Piece piece) {
         this.piece = piece;
         this.occupied = true;
+        this.piece.setCoordinate(this.index);
     }
     public Piece getPiece() {
-        if(isOccupied()) {
+        if(isOccupied()){
             return this.piece;
-        }else {
+        }else{
             return null;
         }
     }
@@ -47,10 +50,12 @@ public class Square {
         if(this.isOccupied()){
             if(this.getPiece().getAlliance() == Alliance.BLACK){
                 return "|" + this.piece.toString().toLowerCase() + "|";
-            }else {
+            }
+            else{
                 return "|" + this.piece.toString() +  "|";
             }
-        }else{
+        }
+        else{
             return "| |";
         }
     }

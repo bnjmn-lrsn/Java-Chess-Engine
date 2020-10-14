@@ -14,6 +14,8 @@ public final class Board {
     private ArrayList<Piece> blackPieceSet;
     private Player whitePlayer;
     private Player blackPlayer;
+    private boolean enPassant;
+    private Square enPassantSquare;
 
     private static final String[] fileDesignators = {"a", "b", "c", "d", "e", "f", "g", "h"};
 
@@ -22,6 +24,7 @@ public final class Board {
     public Board() {
         this.playerToMove = Alliance.WHITE;
         this.moveHistory = new ArrayList<>();
+        this.enPassant = false;
 
         initBoardSquares();
         initWhitePieces();
@@ -31,13 +34,13 @@ public final class Board {
     private void initBoardSquares() {
         this.gameBoard = new Square[120];
 
-        for(int i = 0; i < this.gameBoard.length; ++i) {
-            this.gameBoard[i] = new Square(65);
+        for(int i = 0; i < this.gameBoard.length; ++i){
+            this.gameBoard[i] = new Square(65, i);
         }
 
         int sq, sq64;
-        for(int rank = 0; rank < 8; ++rank) {
-            for(int file = 0; file < 8; ++file) {
+        for(int rank = 0; rank < 8; ++rank){
+            for(int file = 0; file < 8; ++file){
                 sq = (21 + file) + (rank * 10);
                 sq64 = rank * 8 + file;
                 this.gameBoard[sq].setCoordinate(sq64);
@@ -45,10 +48,10 @@ public final class Board {
         }
     }
 
-    private void initWhitePieces() {
+    private void initWhitePieces(){
         this.whitePieceSet = new ArrayList<>();
         //White Pawns
-        for(int i = 81; i < 89; ++i) {
+        for(int i = 81; i < 89; ++i){
             this.gameBoard[i].setPiece(new Pawn(i, Alliance.WHITE));
             this.whitePieceSet.add(this.gameBoard[i].getPiece());
         }
@@ -73,13 +76,12 @@ public final class Board {
         //White King
         this.gameBoard[95].setPiece(new King(95, Alliance.WHITE));
         this.whitePieceSet.add(this.gameBoard[95].getPiece());
-
     }
 
     private void initBlackPieces() {
         this.blackPieceSet = new ArrayList<>();
         //Black Pawns
-        for(int i = 31; i < 39; ++i) {
+        for(int i = 31; i < 39; ++i){
             this.gameBoard[i].setPiece(new Pawn(i, Alliance.BLACK));
             this.blackPieceSet.add(this.gameBoard[i].getPiece());
         }
@@ -154,7 +156,7 @@ public final class Board {
         move.makeMove(this);
         move.getPieceMoved().setMovedState();
         this.moveHistory.add(move);
-        if(this.playerToMove == Alliance.WHITE) {
+        if(this.playerToMove == Alliance.WHITE){
             playerToMove = Alliance.BLACK;
         }
         else {
@@ -178,8 +180,9 @@ public final class Board {
                 board.append(gameBoard[i]);
             }
         }
-
         return board.toString();
     }
+
+    public int getBoardSize(){ return this.gameBoard.length; }
 
 }

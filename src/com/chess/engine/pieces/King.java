@@ -22,23 +22,24 @@ public class King extends Piece{
     public ArrayList<Move> getPossibleMoves(Board board) {
         this.possibleMoves = new ArrayList<>();
         int newCoordinate;
-        for (int coordinateModifier : this.coordinateModifiers) {
-            newCoordinate = this.coordinate + coordinateModifier;
-            Square newSquare = board.getSquare(newCoordinate);
+        Square newSquare;
+        Move move;
 
-            if (board.isValidSquare(newCoordinate) && (!(newSquare.isOccupied()))) {
-                Move move = new Move.PieceMove(this.coordinate, newCoordinate, this);
-                this.possibleMoves.add(move);
-            }
-            else if (board.isValidSquare(newCoordinate) &&
-                      (newSquare.isOccupied()
-                      && newSquare.getPiece().getAlliance() != this.alliance)) {
-                Piece pieceToCapture = newSquare.getPiece();
-                Move move = new Move.Capture(this.coordinate, newCoordinate, this, pieceToCapture);
-                this.possibleMoves.add(move);
+        for (int coordinateModifier : this.coordinateModifiers){
+            newCoordinate = this.coordinate + coordinateModifier;
+            if (board.isValidSquare(newCoordinate)){
+                newSquare = board.getSquare(newCoordinate);
+                if(!newSquare.isOccupied()){
+                    move = new Move.PieceMove(this.coordinate, newCoordinate, this);
+                    this.possibleMoves.add(move);
+                }
+                else if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
+                    Piece pieceToCapture = newSquare.getPiece();
+                    move = new Move.Capture(this.coordinate, newCoordinate, this, pieceToCapture);
+                    this.possibleMoves.add(move);
+                }
             }
         }
-
         return this.possibleMoves;
     }
 }
