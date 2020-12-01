@@ -1,8 +1,11 @@
 package com.chess.gui;
 
 import com.chess.engine.board.Board;
+import com.chess.engine.board.Move;
 import com.chess.engine.board.Square;
 import com.chess.engine.pieces.Piece;
+import com.chess.engine.player.Alliance;
+import com.chess.engine.player.Player;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,26 +17,31 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
+
+import static javax.swing.SwingUtilities.isLeftMouseButton;
+import static javax.swing.SwingUtilities.isRightMouseButton;
 
 public class Table {
 
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
-    private final Board chessBoard;
+    private Player white;
+    private Player black;
+    private Board chessBoard;
+    private BoardDirection boardDirection;
 
     private Square sourceSquare;
     private Square destinationSquare;
     private Piece humanMovedPiece;
 
-    //private final Color lightSquareColour = Color.decode("#d3cfde");//light gray
-    //private final Color darkSquareColour = Color.decode("#808080");//dark dray
-
+    //Artwork attribution : Original work by C. Burnett (2006)(https://en.wikipedia.org/wiki/User:Cburnett)
     private static String defaultPieceImagePath = "art" + File.separator + "standard" + File.separator;
+    //private static String defaultPieceImagePath = "art" + File.separator + "solar" + File.separator;
     private final Color lightSquareColour = Color.decode("#dcb075");//light pink/brown
-    //private final Color darkSquareColour = Color.decode("#65000b");// red/brown
-    private final Color darkSquareColour = Color.decode("#320005");//dark red/brown
+    private final Color darkSquareColour = Color.decode("#65000b");// red/brown
 
     private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(550,550);
     private final static Dimension BOARD_PANEL_DIMENSION = new Dimension(400, 350);
@@ -45,7 +53,10 @@ public class Table {
         final JMenuBar tableMenuBar = createMenuBar();
         this.gameFrame.setJMenuBar(tableMenuBar);
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
-        chessBoard = new Board();
+        this.white = new Player(Alliance.WHITE);
+        this.black = new Player(Alliance.BLACK);
+        this.chessBoard = new Board(white, black);
+        this.boardDirection = BoardDirection.NORMAL;
         this.boardPanel = new BoardPanel();
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
         this.gameFrame.setVisible(true);
@@ -54,6 +65,7 @@ public class Table {
     private JMenuBar createMenuBar() {
         final JMenuBar tableMenuBar = new JMenuBar();
         tableMenuBar.add(createFileMenu());
+        tableMenuBar.add(createPreferencesMenu());
 
         return tableMenuBar;
     }
@@ -62,23 +74,24 @@ public class Table {
         final JMenu fileMenu = new JMenu("File");
 
         final JMenuItem openPGN = new JMenuItem("Load PGN File");
-        openPGN.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Opening the PGN file!");
-            }
-        });
+        openPGN.addActionListener(e -> System.out.println("Opening the PGN file!"));
         fileMenu.add(openPGN);
 
         final JMenuItem exitMenuItem = new JMenuItem("Exit");
-        exitMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        exitMenuItem.addActionListener(e -> System.exit(0));
         fileMenu.add(exitMenuItem);
         return fileMenu;
+    }
+
+    private JMenu createPreferencesMenu(){
+        JMenu preferenceMenu = new JMenu("Preferences");
+        JMenuItem flipBoardMenuItem = new JMenuItem("Flip board");
+        flipBoardMenuItem.addActionListener(e -> {
+            boardDirection = boardDirection.opposite();
+            boardPanel.drawBoard(chessBoard);
+        });
+        preferenceMenu.add(flipBoardMenuItem);
+        return preferenceMenu;
     }
 
     private class BoardPanel extends JPanel {
@@ -97,42 +110,57 @@ public class Table {
             setPreferredSize(BOARD_PANEL_DIMENSION);
             validate();
         }
+
+        public void drawBoard(Board boardToDraw) {
+            removeAll();
+            for(SquarePanel panel : boardDirection.traverse(boardSquares)){
+                panel.drawSquare(boardToDraw);
+                add(panel);
+            }
+            validate();
+            repaint();
+        }
     }
 
     private class SquarePanel extends JPanel {
 
         private final int squareID;
 
-        SquarePanel(BoardPanel boardPanel, int squareID) {
+        SquarePanel(BoardPanel boardPanel, int squareID){
             super(new GridBagLayout());
             this.squareID = squareID;
             setPreferredSize(SQUARE_PANEL_DIMENSION);
             assignSquareColour();
             assignSquarePieceIcon(chessBoard);
 
-            addMouseListener(new MouseListener() {
+            addMouseListener(new MouseListener(){
                 @Override
-                public void mouseClicked(MouseEvent e) {
+                public void mouseClicked(MouseEvent e){
 
-                    /*if(isRightMouseButton(event)) {
-                        if(sourceSquare == null) {
+                    if(isRightMouseButton(e)){//cancel everything
+                        sourceSquare = null;
+                        destinationSquare = null;
+                        humanMovedPiece = null;
+                    }
+                    else if(isLeftMouseButton(e)){
+                        if(sourceSquare == null){
                             sourceSquare = chessBoard.getSquare(squareID);
                             humanMovedPiece = sourceSquare.getPiece();
                             if(humanMovedPiece == null){
                                 sourceSquare = null;
                             }
-                        } else {
-                            destinationSquare = chessBoard.getSquare(squareID);
-                            final Move move = null;
-
-
                         }
+                        else{
+                            destinationSquare = chessBoard.getSquare(squareID);
+                            Move move = Move.MoveFactory.createMove(chessBoard, sourceSquare.getIndex(), destinationSquare.getIndex());
+                            chessBoard.makeMove(move);
 
-
-                    } else if(isLeftMouseButton(event)) {
-
-                    }*/
-
+                            sourceSquare = null;
+                            destinationSquare = null;
+                            humanMovedPiece = null;
+                        }
+                        SwingUtilities.invokeLater(() -> boardPanel.drawBoard(chessBoard));
+                    }
                 }
 
                 @Override
@@ -176,14 +204,49 @@ public class Table {
         }
 
         private void assignSquareColour() {
-            if(this.squareID / 10 % 2 == 0) {
+            if(this.squareID / 10 % 2 == 0){
                 setBackground(this.squareID % 2 != 0 ? lightSquareColour : darkSquareColour);
-            }else if(this.squareID / 10 % 2 != 0) {
+            }else if(this.squareID / 10 % 2 != 0){
                 setBackground(this.squareID % 2 != 0 ? darkSquareColour : lightSquareColour);
 
             }
         }
 
+        public void drawSquare(Board boardToDraw) {
+            assignSquareColour();
+            assignSquarePieceIcon(boardToDraw);
+            validate();
+            repaint();
+        }
+    }
+
+    enum BoardDirection{
+
+        NORMAL {
+            @Override
+            List<SquarePanel> traverse(List<SquarePanel> boardSquares) {
+                return boardSquares;
+            }
+
+            @Override
+            BoardDirection opposite() {
+                return REVERSED;
+            }
+        },
+        REVERSED{
+            @Override
+            List<SquarePanel> traverse(List<SquarePanel> boardSquares) {
+                Collections.reverse(boardSquares);
+                return boardSquares;
+            }
+
+            @Override
+            BoardDirection opposite() {
+                return NORMAL;
+            }
+        };
+        abstract List<SquarePanel> traverse(List<SquarePanel> boardSquares);
+        abstract BoardDirection opposite();
     }
 
 }

@@ -8,12 +8,14 @@ import com.chess.engine.player.*;
 
 public final class Board {
     private Square[] gameBoard;
+    private Player whitePlayer;
+    private Player blackPlayer;
+    private Player currentMoveMaker;
     private Alliance playerToMove;
     private ArrayList<Move> moveHistory;
     private ArrayList<Piece> whitePieceSet;
     private ArrayList<Piece> blackPieceSet;
-    private Player whitePlayer;
-    private Player blackPlayer;
+
     private boolean enPassant;
     private Square enPassantSquare;
 
@@ -29,6 +31,27 @@ public final class Board {
         initBoardSquares();
         initWhitePieces();
         initBlackPieces();
+
+        this.whitePlayer = new Player(Alliance.WHITE);
+        this.blackPlayer = new Player(Alliance.BLACK);
+        this.currentMoveMaker = this.whitePlayer;
+    }
+
+    public Board(Player whitePlayer, Player blackPlayer){
+        this.playerToMove = Alliance.WHITE;
+        this.moveHistory = new ArrayList<>();
+        this.enPassant = false;
+        this.whitePlayer = whitePlayer;
+        this.blackPlayer = blackPlayer;
+        this.currentMoveMaker = whitePlayer;
+
+        initBoardSquares();
+        initWhitePieces();
+        initBlackPieces();
+
+        this.whitePlayer.setMaterialInPlay(this.whitePieceSet);
+        this.blackPlayer.setMaterialInPlay(this.blackPieceSet);
+
     }
 
     private void initBoardSquares() {
@@ -123,6 +146,8 @@ public final class Board {
         return hm;
     }
 
+    public int getBoardSize(){ return this.gameBoard.length; }
+
     public boolean isValidSquare(int coordinate) {
         return this.gameBoard[coordinate].getCoordinate() >= 0
                && this.gameBoard[coordinate].getCoordinate() <= 63;
@@ -152,20 +177,56 @@ public final class Board {
         return this.blackPlayer;
     }
 
+    public Player getCurrentMoveMaker(){ return this.currentMoveMaker; }
+
+    public ArrayList<Move> getMoveHistory() {
+        return this.moveHistory;
+    }
+
     public void makeMove(Move move) {
         move.makeMove(this);
         move.getPieceMoved().setMovedState();
         this.moveHistory.add(move);
         if(this.playerToMove == Alliance.WHITE){
-            playerToMove = Alliance.BLACK;
+            this.playerToMove = Alliance.BLACK;
+            this.currentMoveMaker = this.blackPlayer;
         }
         else {
-            playerToMove = Alliance.WHITE;
+            this.playerToMove = Alliance.WHITE;
+            this.currentMoveMaker = this.whitePlayer;
         }
     }
 
-    public ArrayList<Move> getMoveHistory() {
-        return this.moveHistory;
+    public void undoMove(){
+        Move mostRecentMove = this.moveHistory.get(this.moveHistory.size() - 1);
+        mostRecentMove.undoMove(this);
+        this.moveHistory.remove(this.moveHistory.size() - 1);
+        if(this.playerToMove == Alliance.WHITE){
+            this.playerToMove = Alliance.BLACK;
+            this.currentMoveMaker = this.blackPlayer;
+        }
+        else{
+            this.playerToMove = Alliance.WHITE;
+            this.currentMoveMaker = this.whitePlayer;
+        }
+    }
+
+    public boolean hasEnPassantSquare(){
+        if(this.moveHistory.size() > 0){
+            return this.moveHistory.get(this.moveHistory.size() - 1).isPawnJump();
+        }
+        else{
+            return false;
+        }
+    }
+
+    public int  getEnPassantSquare(){
+        if(this.hasEnPassantSquare()){
+            return moveHistory.get(moveHistory.size() - 1).coordinateMovedTo;
+        }
+        else{
+            return 0;
+        }
     }
 
     @Override
@@ -182,7 +243,4 @@ public final class Board {
         }
         return board.toString();
     }
-
-    public int getBoardSize(){ return this.gameBoard.length; }
-
 }

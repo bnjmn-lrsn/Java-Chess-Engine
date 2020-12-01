@@ -62,6 +62,11 @@ public enum Alliance {
         public int getKingStartingCoordinate() {
             return 95;
         }
+
+        @Override
+        public boolean isMaximizingPlayer() {
+            return true;
+        }
     },
     BLACK(){
         public boolean isWhite(){
@@ -127,6 +132,11 @@ public enum Alliance {
             return 25;
         }
 
+        @Override
+        public boolean isMaximizingPlayer() {
+            return false;
+        }
+
 
     };
     public abstract int getDirectionModifier();
@@ -140,4 +150,5 @@ public enum Alliance {
     public abstract int getQueenSideTransitionCoordinate();
     public abstract int getQueenKnightCoordinate();
     public abstract int getKingStartingCoordinate();
+    public abstract boolean isMaximizingPlayer();
 }

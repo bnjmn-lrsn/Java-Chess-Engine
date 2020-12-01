@@ -10,17 +10,23 @@ public class Player {
     private ArrayList<Move> allPossibleMoves;
     private final int directionModifier;
     private final Alliance alliance;
-    private final Piece king;
+    private Piece king;
     private final int[] diagonalModifiers = {-11, -9, 9, 11};
     private final int[] rankFileModifiers = {-10, -1, 1, 10};
     private final int[] knightModifiers = {-21, -19, -12, -8, 8, 12, 19, 21};
     private final int[] kingModifiers = {-11, -10, -9, -1, 1, 9, 10, 11};
 
-    public Player(Alliance alliance, Board board) {
+    public Player(final Alliance alliance, final Board board) {
         this.alliance = alliance;
-        calculateActivePieces(board);
+        this.materialInPlay = board.getPieceSet(alliance);
         this.directionModifier = alliance.getDirectionModifier();
         this.king = this.materialInPlay.get(this.materialInPlay.size() - 1);
+    }
+
+    public Player(final Alliance alliance){
+        this.alliance = alliance;
+        this.materialInPlay = new ArrayList<>();
+        this.directionModifier = alliance.getDirectionModifier();
     }
 
     public Alliance getPlayerAlliance() {
@@ -29,6 +35,19 @@ public class Player {
 
     public ArrayList<Piece> getMaterialInPlay(){
         return this.materialInPlay;
+    }
+
+    public void setMaterialInPlay(ArrayList<Piece> pieces){
+        this.materialInPlay = pieces;
+        this.establishKing();
+    }
+
+    private void establishKing(){
+        for(Piece piece : materialInPlay){
+            if (piece.getPieceType().equals("King")){
+                this.king = piece;
+            }
+        }
     }
 
     public boolean kingIsSafe(Move move, Board board) {
@@ -69,6 +88,14 @@ public class Player {
         }else {
             return false;
         }
+    }
+
+    public boolean isStaleMate(Board board){
+        return !isInCheck(board) && allPossibleMoves.size() == 0;
+    }
+
+    public boolean isCheckMate(Board board){
+        return isInCheck(board) && allPossibleMoves.size() == 0;
     }
 
     private boolean checkForDiagonalThreats(Board board) {
@@ -238,7 +265,7 @@ public class Player {
         return castlingMoves;
     }
 
-    private void calculateActivePieces(Board board){
+    private void calculateActivePieces(final Board board){
         this.materialInPlay = new ArrayList<>();
         Square sq;
         for(int i = 0; i < board.getBoardSize(); ++i){
@@ -251,7 +278,7 @@ public class Player {
         }
     }
 
-    public ArrayList<Move> generateAllPossibleMoves(Board board) {
+    public ArrayList<Move> generateAllPossibleMoves(final Board board) {
         calculateActivePieces(board);
         this.allPossibleMoves = new ArrayList<>();
         ArrayList<Move> currentPieceMoves;
@@ -269,11 +296,15 @@ public class Player {
         return this.allPossibleMoves;
     }
 
-    public void makeMove(Move move, Board board) {
+    public ArrayList<Move> getAllPossibleMoves(){
+        return this.allPossibleMoves;
+    }
+
+    public void makeMove(final Move move, final Board board) {
         move.makeMove(board);
     }
 
-    public void undoMove(Move move, Board board) {
+    public void undoMove(final Move move, final Board board) {
         move.undoMove(board);
     }
 }

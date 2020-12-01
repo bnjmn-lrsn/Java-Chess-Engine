@@ -54,7 +54,9 @@ public abstract class Piece {
     public boolean hasMoved() { return this.moved; }
 
     public void setMovedState() {
-        this.moved = true;
+        if(!this.moved){
+            this.moved = true;
+        }
     }
 
     public abstract ArrayList<Move> getPossibleMoves(Board board);

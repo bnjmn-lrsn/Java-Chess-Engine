@@ -7,7 +7,7 @@ import com.chess.engine.player.*;
 
 public class Pawn extends Piece {
     private Piece promotionPiece;
-    private int directionModifier;
+    private final int directionModifier;
 
     public Pawn(int coordinate, Alliance alliance) {
         super(coordinate, alliance);
@@ -149,6 +149,14 @@ public class Pawn extends Piece {
                 if(newSquare.isOccupied() && newSquare.getPiece().getAlliance() != this.alliance){
                     move = new Move.PawnCapture(this.coordinate, newCoordinate, this, newSquare.getPiece());
                     this.possibleMoves.add(move);
+                }
+            }
+            if(board.hasEnPassantSquare()){
+                int enPassantCoordinate = board.getEnPassantSquare();
+                if(this.coordinate + 1 == enPassantCoordinate || this.coordinate - 1 == enPassantCoordinate) {
+                    Square enPassantSquare = board.getSquare(enPassantCoordinate);
+                    Move enPassant = new Move.PawnCapture(this.coordinate, enPassantCoordinate + (10 * this.directionModifier), this, enPassantSquare.getPiece());
+                    this.possibleMoves.add(enPassant);
                 }
             }
         }
