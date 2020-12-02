@@ -151,13 +151,14 @@ public class Pawn extends Piece {
                     this.possibleMoves.add(move);
                 }
             }
-            if(board.hasEnPassantSquare()){
-                int enPassantCoordinate = board.getEnPassantSquare();
-                if(this.coordinate + 1 == enPassantCoordinate || this.coordinate - 1 == enPassantCoordinate) {
-                    Square enPassantSquare = board.getSquare(enPassantCoordinate);
-                    Move enPassant = new Move.PawnCapture(this.coordinate, enPassantCoordinate + (10 * this.directionModifier), this, enPassantSquare.getPiece());
-                    this.possibleMoves.add(enPassant);
-                }
+        }
+        if(board.hasEnPassantSquare()){
+            int enPassantCoordinate = board.getEnPassantSquare();
+            if(this.coordinate + 1 == enPassantCoordinate || this.coordinate - 1 == enPassantCoordinate) {
+                Square enPassantSquare = board.getSquare(enPassantCoordinate);
+                Move enPassant = new Move.EnPassantMove(this.coordinate, enPassantCoordinate +
+                        (10 * this.directionModifier), enPassantCoordinate, this, enPassantSquare.getPiece());
+                this.possibleMoves.add(enPassant);
             }
         }
         return possibleMoves;

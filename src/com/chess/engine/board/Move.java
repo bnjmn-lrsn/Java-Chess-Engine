@@ -50,7 +50,6 @@ public abstract class Move {
 
 
     public static final class PieceMove extends Move {
-
         public PieceMove(int coordinateMovedFrom, int coordinateMovedTo,
                          Piece pieceMoved) {
             super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
@@ -75,20 +74,15 @@ public abstract class Move {
         public void makeMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedTo.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedTo);
             squareMovedFrom.removePiece();
-
         }
 
         @Override
         public void undoMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedFrom.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedFrom);
             squareMovedTo.removePiece();
         }
 
@@ -99,7 +93,6 @@ public abstract class Move {
     }
 
     public static final class Capture extends Move {
-
         private final Piece pieceCaptured;
 
         public Capture(int coordinateMovedFrom, int coordinateMovedTo,
@@ -127,9 +120,7 @@ public abstract class Move {
         public void makeMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedTo.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedTo);
             squareMovedFrom.removePiece();
         }
 
@@ -137,9 +128,7 @@ public abstract class Move {
         public void undoMove(Board board) {
             Square squareMovedTo = board.getSquare(coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(coordinateMovedFrom);
-
             squareMovedTo.setPiece(this.pieceCaptured);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedFrom);
             squareMovedFrom.setPiece(this.pieceMoved);
         }
 
@@ -174,9 +163,7 @@ public abstract class Move {
         public void makeMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedTo.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedTo);
             squareMovedFrom.removePiece();
         }
 
@@ -184,9 +171,7 @@ public abstract class Move {
         public void undoMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedFrom.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedFrom);
             squareMovedTo.removePiece();
         }
 
@@ -197,7 +182,6 @@ public abstract class Move {
     }
 
     public static final class PawnCapture extends Move {
-
         private final Piece pieceCaptured;
 
         public PawnCapture(int coordinateMovedFrom, int coordinateMovedTo,
@@ -225,9 +209,7 @@ public abstract class Move {
         public void makeMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedTo.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedTo);
             squareMovedFrom.removePiece();
         }
 
@@ -235,9 +217,7 @@ public abstract class Move {
         public void undoMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedTo.setPiece(this.pieceCaptured);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedFrom);
             squareMovedFrom.setPiece(this.pieceMoved);
         }
 
@@ -248,8 +228,59 @@ public abstract class Move {
         }
     }
 
-    public static final class PawnPromotion extends Move {
+    public static final class EnPassantMove extends Move {
+        private final Piece pieceCaptured;
+        private final int capturePawnCoordinate;
 
+        public EnPassantMove(int coordinateMovedFrom, int coordinateMovedTo, int capturedPawnCoordinate,
+                             Piece pieceMoved, Piece pieceCaptured) {
+            super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
+            this.pieceCaptured = pieceCaptured;
+            this.capturePawnCoordinate = capturedPawnCoordinate;
+        }
+
+        @Override
+        public boolean isCapture() {
+            return true;
+        }
+
+        @Override
+        public boolean isPawnJump() {
+            return false;
+        }
+
+        @Override
+        public Piece getCapturedPiece() {
+            return this.pieceCaptured;
+        }
+
+        @Override
+        public void makeMove(Board board) {
+            Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
+            Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
+            Square capturePawnSquare = board.getSquare(this.capturePawnCoordinate);
+            squareMovedTo.setPiece(this.pieceMoved);
+            squareMovedFrom.removePiece();
+            capturePawnSquare.removePiece();
+        }
+
+        @Override
+        public void undoMove(Board board) {
+            Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
+            Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
+            Square capturePawnSquare = board.getSquare(this.capturePawnCoordinate);
+            squareMovedFrom.setPiece(this.pieceMoved);
+            squareMovedTo.removePiece();
+            capturePawnSquare.setPiece(this.pieceCaptured);
+        }
+        @Override
+        public String toString(){
+            return Board.algebraicCoordinates.get(this.coordinateMovedFrom) + "x" +
+                    Board.algebraicCoordinates.get(this.coordinateMovedTo);
+        }
+    }
+
+    public static final class PawnPromotion extends Move {
         private final Piece piecePromotedTo;
 
         public PawnPromotion(int coordinateMovedFrom, int coordinateMovedTo,
@@ -275,9 +306,7 @@ public abstract class Move {
         public void makeMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedTo.setPiece(this.piecePromotedTo);
-            //this.piecePromotedTo.setCoordinate(this.coordinateMovedTo);
             this.pieceMoved.setCoordinate(-1);
             squareMovedFrom.removePiece();
         }
@@ -286,9 +315,7 @@ public abstract class Move {
         public void undoMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedFrom.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedFrom);
             squareMovedTo.removePiece();
             this.piecePromotedTo.setCoordinate(-1);
         }
@@ -327,9 +354,7 @@ public abstract class Move {
         public void makeMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedTo.setPiece(this.piecePromotedTo);
-            //this.piecePromotedTo.setCoordinate(this.coordinateMovedTo);
             this.pieceMoved.setCoordinate(-1);
             squareMovedFrom.removePiece();
         }
@@ -338,12 +363,9 @@ public abstract class Move {
         public void undoMove(Board board) {
             Square squareMovedTo = board.getSquare(this.coordinateMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
-
             squareMovedFrom.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedFrom);
             this.piecePromotedTo.setCoordinate(-1);
             squareMovedTo.setPiece(this.pieceCaptured);
-            //this.pieceCaptured.setCoordinate(this.coordinateMovedTo);
         }
 
         @Override
@@ -355,7 +377,6 @@ public abstract class Move {
     }
 
     public static abstract class Castle extends Move {
-
         Piece rookMoved;
         protected final int coordinateRookMovedFrom;
         protected final int coordinateRookMovedTo;
@@ -400,11 +421,8 @@ public abstract class Move {
             Square squareRookMovedTo = board.getSquare(this.coordinateRookMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
             Square squareRookMovedFrom = board.getSquare(this.coordinateRookMovedFrom);
-
             squareMovedTo.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedTo);
             squareRookMovedTo.setPiece(this.rookMoved);
-            //this.rookMoved.setCoordinate(this.coordinateRookMovedTo);
             squareMovedFrom.removePiece();
             squareRookMovedFrom.removePiece();
         }
@@ -415,11 +433,8 @@ public abstract class Move {
             Square squareRookMovedTo = board.getSquare(this.coordinateRookMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
             Square squareRookMovedFrom = board.getSquare(this.coordinateRookMovedFrom);
-
             squareMovedFrom.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedFrom);
             squareRookMovedFrom.setPiece(this.rookMoved);
-            //this.rookMoved.setCoordinate(this.coordinateRookMovedFrom);
             squareMovedTo.removePiece();
             squareRookMovedTo.removePiece();
         }
@@ -449,11 +464,8 @@ public abstract class Move {
             Square squareRookMovedTo = board.getSquare(this.coordinateRookMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
             Square squareRookMovedFrom = board.getSquare(this.coordinateRookMovedFrom);
-
             squareMovedTo.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedTo);
             squareRookMovedTo.setPiece(this.rookMoved);
-            //this.rookMoved.setCoordinate(this.coordinateRookMovedTo);
             squareMovedFrom.removePiece();
             squareRookMovedFrom.removePiece();
         }
@@ -464,11 +476,8 @@ public abstract class Move {
             Square squareRookMovedTo = board.getSquare(this.coordinateRookMovedTo);
             Square squareMovedFrom = board.getSquare(this.coordinateMovedFrom);
             Square squareRookMovedFrom = board.getSquare(this.coordinateRookMovedFrom);
-
             squareMovedFrom.setPiece(this.pieceMoved);
-            //this.pieceMoved.setCoordinate(this.coordinateMovedFrom);
             squareRookMovedFrom.setPiece(this.rookMoved);
-            //this.rookMoved.setCoordinate(this.coordinateRookMovedFrom);
             squareMovedTo.removePiece();
             squareRookMovedTo.removePiece();
         }
@@ -479,7 +488,6 @@ public abstract class Move {
         }
     }
     public static class NullMove extends Move{
-
         private static NullMove NULL_MOVE_INSTANCE = new NullMove(0, 0, null);
 
         private NullMove(int coordinateMovedFrom, int coordinateMovedTo, Piece pieceMoved) {
@@ -533,7 +541,6 @@ public abstract class Move {
                     return moveToCreate;
                 }
             }
-
             return NullMove.getInstance();
         }
     }

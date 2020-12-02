@@ -220,9 +220,9 @@ public final class Board {
         }
     }
 
-    public int  getEnPassantSquare(){
+    public int getEnPassantSquare(){
         if(this.hasEnPassantSquare()){
-            return moveHistory.get(moveHistory.size() - 1).coordinateMovedTo;
+            return moveHistory.get(moveHistory.size() - 1).getCoordinateMovedTo();
         }
         else{
             return 0;
