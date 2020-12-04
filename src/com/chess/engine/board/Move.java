@@ -1,6 +1,7 @@
 package com.chess.engine.board;
 
 import com.chess.engine.pieces.*;
+import com.chess.engine.player.Alliance;
 
 import java.lang.Math;
 
@@ -223,7 +224,7 @@ public abstract class Move {
 
         @Override
         public String toString(){
-            return Board.algebraicCoordinates.get(this.coordinateMovedFrom) + "x" +
+            return Board.algebraicCoordinates.get(this.coordinateMovedFrom).charAt(0) + "x" +
                     Board.algebraicCoordinates.get(this.coordinateMovedTo);
         }
     }
@@ -275,7 +276,7 @@ public abstract class Move {
         }
         @Override
         public String toString(){
-            return Board.algebraicCoordinates.get(this.coordinateMovedFrom) + "x" +
+            return Board.algebraicCoordinates.get(this.coordinateMovedFrom).charAt(0) + "x" +
                     Board.algebraicCoordinates.get(this.coordinateMovedTo);
         }
     }
@@ -370,7 +371,7 @@ public abstract class Move {
 
         @Override
         public String toString(){
-            return Board.algebraicCoordinates.get(this.coordinateMovedFrom) +
+            return Board.algebraicCoordinates.get(this.coordinateMovedFrom).charAt(0) +
                    "x" + Board.algebraicCoordinates.get(this.coordinateMovedTo) +
                    "=" + this.piecePromotedTo;
         }
@@ -488,7 +489,8 @@ public abstract class Move {
         }
     }
     public static class NullMove extends Move{
-        private static NullMove NULL_MOVE_INSTANCE = new NullMove(0, 0, null);
+        private static NullMove NULL_MOVE_INSTANCE = new NullMove(0, 0,
+                new King(-1, Alliance.BLACK));
 
         private NullMove(int coordinateMovedFrom, int coordinateMovedTo, Piece pieceMoved) {
             super(coordinateMovedFrom, coordinateMovedTo, pieceMoved);
@@ -536,7 +538,8 @@ public abstract class Move {
         public static Move createMove(Board board, final int squareMovedFrom, final int squareMovedTo){
             Move moveToCreate;
             for(Move move : board.getCurrentMoveMaker().generateAllPossibleMoves(board)){
-                if(move.getCoordinateMovedFrom() == squareMovedFrom && move.getCoordinateMovedTo() == squareMovedTo){
+                if(move.getCoordinateMovedFrom() == squareMovedFrom &&
+                   move.getCoordinateMovedTo() == squareMovedTo){
                     moveToCreate = move;
                     return moveToCreate;
                 }

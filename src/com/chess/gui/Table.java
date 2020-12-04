@@ -26,9 +26,11 @@ import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 
 public class Table {
-
     private final JFrame gameFrame;
+    private final GameHistoryPanel gameHistoryPanel;
+    private final CapturedPiecesPanel capturedPiecesPanel;
     private final BoardPanel boardPanel;
+    private final MoveLog moveLog;
     private Player white;
     private Player black;
     private Board chessBoard;
@@ -43,7 +45,7 @@ public class Table {
     private static String defaultPieceImagePath = "art" + File.separator + "standard" + File.separator;
     private final Color lightSquareColour = Color.decode("#dcb075");//light pink/brown
     private final Color darkSquareColour = Color.decode("#65000b");// red/brown
-    private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(550,550);
+    private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(770,550);
     private final static Dimension BOARD_PANEL_DIMENSION = new Dimension(400, 350);
     private final static Dimension SQUARE_PANEL_DIMENSION = new Dimension(8, 8);
 
@@ -56,10 +58,15 @@ public class Table {
         this.white = new Player(Alliance.WHITE);
         this.black = new Player(Alliance.BLACK);
         this.chessBoard = new Board(white, black);
+        this.gameHistoryPanel = new GameHistoryPanel();
+        this.capturedPiecesPanel = new CapturedPiecesPanel();
+        this.boardPanel = new BoardPanel();
+        this.moveLog = new MoveLog();
         this.boardDirection = BoardDirection.NORMAL;
         this.highlightLegalMoves = false;
-        this.boardPanel = new BoardPanel();
+        this.gameFrame.add(this.capturedPiecesPanel, BorderLayout.WEST);
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
+        this.gameFrame.add(this.gameHistoryPanel, BorderLayout.EAST);
         this.gameFrame.setVisible(true);
     }
 
@@ -182,12 +189,19 @@ public class Table {
                         else{
                             destinationSquare = chessBoard.getSquare(squareID);
                             Move move = Move.MoveFactory.createMove(chessBoard, sourceSquare.getIndex(), destinationSquare.getIndex());
-                            chessBoard.makeMove(move);
+                            if(move != Move.NullMove.getInstance()) {
+                                chessBoard.makeMove(move);
+                                moveLog.addMove(move);
+                            }
                             sourceSquare = null;
                             destinationSquare = null;
                             humanMovedPiece = null;
                         }
-                        SwingUtilities.invokeLater(() -> boardPanel.drawBoard(chessBoard));
+                        SwingUtilities.invokeLater(() -> {
+                            gameHistoryPanel.redo(chessBoard, moveLog);
+                            capturedPiecesPanel.redo(moveLog);
+                            boardPanel.drawBoard(chessBoard);
+                        });
                     }
                 }
 
